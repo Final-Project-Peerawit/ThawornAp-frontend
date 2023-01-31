@@ -1,7 +1,16 @@
+import { PageHeader } from "antd";
 import React from "react";
+import Texteditor from "./components/texteditor/textEditor";
 
-export default function homePage () :React.ReactElement {
-    return <div className="text-red-200">homePage</div>
-}
+const home: React.FC = () => {
+  return (
+    <div className="flex-initial">
+      <PageHeader title="หน้าแรก" />
+      <div className="px-10 pb-10">
+        <Texteditor />
+      </div>
+    </div>
+  );
+};
 
-// yarn install
+export default home;

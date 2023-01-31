@@ -9,6 +9,8 @@ import {
   UpCircleOutlined,
 } from "@ant-design/icons";
 import { Grid } from "antd";
+import { QueryClientProvider, QueryClient } from "react-query";
+
 export default function MyApp({ Component, pageProps }) {
   const Links = [
     { name: "หน้าแรก", link: "/thaworn-ap/home" },
@@ -23,8 +25,10 @@ export default function MyApp({ Component, pageProps }) {
 
   const [open, setOpen] = useState(false);
 
+  const [queryClient] = React.useState(() => new QueryClient());
+
   return (
-    <div className=" w-full h-screen">
+    <div className=" w-full">
       <div
         className="mb:flex items-center justify-between md:flex py-4 md:px-10 px-7"
         style={{ backgroundColor: "#FEA929" }}
@@ -75,11 +79,11 @@ export default function MyApp({ Component, pageProps }) {
       </div>
 
       {/*Don't remove*/}
-      <div className="w-full bg-gray-100">
-        <div className="mx-5 bg-white md:mx-10">
-          <div className="bg-gray-100 h-5 w-full md:h-10" />
-          <Component {...pageProps} />
-          <div className="bg-gray-100 h-5 w-full md:h-10" />
+      <div className="w-full h-screen">
+        <div className="mx-5 md:mx-10 h-screen">
+          <QueryClientProvider client={queryClient}>
+            <Component {...pageProps} />
+          </QueryClientProvider>
         </div>
       </div>
     </div>

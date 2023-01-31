@@ -3,7 +3,6 @@ import {
   CheckCircleOutlined,
   ClockCircleOutlined,
   CloseCircleOutlined,
-  DeleteOutlined,
   FileTextOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
@@ -12,15 +11,22 @@ import {
   Form,
   Grid,
   Input,
-  Modal,
+  InputNumber,
   PageHeader,
   Select,
+  Skeleton,
   Table,
   Tag,
   Typography,
 } from "antd";
-import React, { useState } from "react";
+import { ColumnsType } from "antd/lib/table";
+import React, { useEffect, useState } from "react";
 import CardProgressive from "./components/card_progressive";
+import Modals from "./components/modal";
+import { useRouter } from "next/router";
+import { useQuery } from "react-query";
+import { getListReportData } from "src/dataService/api_list_report/get";
+import { getTypeBranch } from "src/dataService/api_branch/get";
 
 type IformInstanceValue = {
   branch: number;
@@ -28,161 +34,91 @@ type IformInstanceValue = {
   roomNumber: number;
 };
 
+export type IData = {
+  key: number;
+  id: number;
+  createDate: string;
+  room_id: number;
+  branch: number;
+  room: string;
+  palce: string;
+  fix: string;
+  problem: string;
+  status: number;
+  description: string;
+};
+
 const listReport: React.FC = () => {
+  const [filterData, setFilterData] = useState<IData[]>();
+
+  const [clickCard, setClickCard] = useState<number>(0);
+
   const { RangePicker } = DatePicker;
 
   const [form] = Form.useForm<IformInstanceValue>();
 
-  const onChange = (value: string) => {
-    console.log(`selected ${value}`);
+  const onFinish = (values: IformInstanceValue): void => {
+    // const findDate = filterData.filter((date) => date.createDate >= values.date[0] && date.createDate <= values.date[1])
+    // reduce + filterdata
+    // const searchBox = filterData
+    //   .filter((branch) => branch.branch === values.branch)
+    //   .filter((room) => room.room_id === Number(values.roomNumber));
+    // setFilterData(searchBox);
+    // const searchBox = filterData.filter(
+    //   (room) => room.room_id === Number(values.roomNumber)
+    // );
+    // const searchBox = filterData.filter(
+    //   (branch) => branch.branch === values.branch
+    // );
   };
 
-  const onSearch = (value: string) => {
-    console.log("search:", value);
-  };
-
-  const onFinish = (values: IformInstanceValue) => {
-    console.log("Success:", values);
-  };
+  const history = useRouter();
 
   const screen = Grid.useBreakpoint();
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { data: dataSource, isLoading } = useQuery({
+    queryKey: ["report_list"],
+    queryFn: async () => getListReportData(),
+  });
 
-  const showModal = () => {
-    setIsModalOpen(true);
+  const { data: dataBranch, isLoading: isLoadingBranch } = useQuery({
+    queryKey: ["branch_list"],
+    queryFn: async () => getTypeBranch(),
+  });
+
+  const normalizeData = (status: number): void => {
+    setClickCard(status);
+    const result = dataSource.result.filter((data) => data.status === status);
+    if (status === 0) {
+      setFilterData(dataSource.result);
+    } else {
+      setFilterData(result);
+    }
   };
 
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-
-  const dataSource = [
-    {
-      key: "1",
-      id: "3001",
-      createDate: "14-sep-2022 07:30:00",
-      room: "ภายในอาคาร",
-      palce: "โถงเดิน",
-      fix: "หลอดไฟ",
-      problem: "ไฟดับ",
-      status: 1,
-      description: "รายละเอียด",
-    },
-    {
-      key: "2",
-      id: "3001",
-      createDate: "14-sep-2022 07:30:00",
-      room: "ภายในอาคาร",
-      palce: "โถงเดิน",
-      fix: "หลอดไฟ",
-      problem: "ไฟดับ",
-      status: 2,
-      description: "รายละเอียด",
-    },
-    {
-      key: "3",
-      id: "3001",
-      createDate: "14-sep-2022 07:30:00",
-      room: "ภายในอาคาร",
-      palce: "โถงเดิน",
-      fix: "หลอดไฟ",
-      problem: "ไฟดับ",
-      status: 3,
-      description: "รายละเอียด",
-    },
-    {
-      key: "4",
-      id: "3001",
-      createDate: "14-sep-2022 07:30:00",
-      room: "ภายในอาคาร",
-      palce: "โถงเดิน",
-      fix: "หลอดไฟ",
-      problem: "ไฟดับ",
-      status: 3,
-      description: "รายละเอียด",
-    },
-    {
-      key: "5",
-      id: "3001",
-      createDate: "14-sep-2022 07:30:00",
-      room: "ภายในอาคาร",
-      palce: "โถงเดิน",
-      fix: "หลอดไฟ",
-      problem: "ไฟดับ",
-      status: 1,
-      description: "รายละเอียด",
-    },
-    {
-      key: "6",
-      id: "3001",
-      createDate: "14-sep-2022 07:30:00",
-      room: "ภายในอาคาร",
-      palce: "โถงเดิน",
-      fix: "หลอดไฟ",
-      problem: "ไฟดับ",
-      status: 2,
-      description: "รายละเอียด",
-    },
-    {
-      key: "7",
-      id: "3001",
-      createDate: "14-sep-2022 07:30:00",
-      room: "ภายในอาคาร",
-      palce: "โถงเดิน",
-      fix: "หลอดไฟ",
-      problem: "ไฟดับ",
-      status: 3,
-      description: "รายละเอียด",
-    },
-    {
-      key: "8",
-      id: "3001",
-      createDate: "14-sep-2022 07:30:00",
-      room: "ภายในอาคาร",
-      palce: "โถงเดิน",
-      fix: "หลอดไฟ",
-      problem: "ไฟดับ",
-      status: 3,
-      description: "รายละเอียด",
-    },
-    {
-      key: "10",
-      id: "3001",
-      createDate: "14-sep-2022 07:30:00",
-      room: "ภายในอาคาร",
-      palce: "โถงเดิน",
-      fix: "หลอดไฟ",
-      problem: "ไฟดับ",
-      status: 3,
-      description: "รายละเอียด",
-    },
-    {
-      key: "9",
-      id: "3001",
-      createDate: "14-sep-2022 07:30:00",
-      room: "ภายในอาคาร",
-      palce: "โถงเดิน",
-      fix: "หลอดไฟ",
-      problem: "ไฟดับ",
-      status: 3,
-      description: "รายละเอียด",
-    },
-  ];
-
-  const columns = [
+  const columns: ColumnsType<IData> = [
     {
       align: "center" as const,
       width: "7%",
       title: () => {
         return <Typography.Text strong> รหัสการแจ้ง </Typography.Text>;
       },
+      render: (id: number) => {
+        return <Typography.Text strong>{id}</Typography.Text>;
+      },
       dataIndex: "id",
       key: "id",
+    },
+    {
+      align: "center" as const,
+      title: () => {
+        return <Typography.Text strong> เลขห้อง </Typography.Text>;
+      },
+      render: (room_id: number) => {
+        return <Typography.Text strong>{room_id}</Typography.Text>;
+      },
+      dataIndex: "room_id",
+      key: "room_id",
     },
     {
       width: "15%",
@@ -276,21 +212,16 @@ const listReport: React.FC = () => {
       },
     },
     {
-      width: "10%",
+      width: "8%",
       align: "center" as const,
       title: () => {
         return <Typography.Text strong> รายละเอียด </Typography.Text>;
       },
-      dataIndex: "description",
+      dataIndex: "id",
       key: "description",
       render: (id: number) => (
-        <a>
-          <Button
-            className="flex items-center rounded-md"
-            icon={<FileTextOutlined />}
-          >
-            รายละเอียด
-          </Button>
+        <a onClick={() => history.push(`list-report/description/${id}`)}>
+          <FileTextOutlined style={{ color: "#3398E8" }} />
         </a>
       ),
     },
@@ -299,27 +230,16 @@ const listReport: React.FC = () => {
       title: () => {
         return <Typography.Text strong> ลบ </Typography.Text>;
       },
-      dataIndex: "delete",
       key: "id",
-      render: (id: number) => (
-        <>
-          <a onClick={showModal}>
-            <DeleteOutlined />
-          </a>
-          <Modal
-            title="Basic Modal"
-            open={isModalOpen}
-            onOk={handleOk}
-            onCancel={handleCancel}
-          >
-            <p>Some contents...</p>
-            <p>Some contents...</p>
-            <p>Some contents...</p>
-          </Modal>
-        </>
-      ),
+      render: (item: IData) => {
+        return <Modals item={item} />;
+      },
     },
   ];
+
+  useEffect(() => {
+    setFilterData(dataSource?.result);
+  }, [dataSource?.result]);
 
   return (
     <div className="flex-initial">
@@ -332,13 +252,14 @@ const listReport: React.FC = () => {
                 <Select
                   className="w-full"
                   placeholder="เลือกสาขา"
-                  onChange={onChange}
                   allowClear
-                >
-                  <Select.Option value={1}>ลาดพร้าว</Select.Option>
-                  <Select.Option value={2}>ลาดพร้าว</Select.Option>
-                  <Select.Option value={3}>ลาดกระบัง</Select.Option>
-                </Select>
+                  options={dataBranch?.result.map((item) => ({
+                    label: item.branch_name,
+                    value: item.branch_id,
+                  }))}
+                  loading={isLoadingBranch}
+                  disabled={isLoadingBranch}
+                />
               </Form.Item>
             </div>
             <div className="w-full md:w-1/3 md:pr-5 md:pt-0">
@@ -368,56 +289,77 @@ const listReport: React.FC = () => {
 
         <div className="flex flex-wrap pt-10">
           <div className="w-full md:w-1/4">
-            <div className="md:flex md:justify-center md:mx-0 mx-2">
+            <div
+              className="md:flex md:justify-center md:mx-0 mx-2"
+              onClick={() => normalizeData(0)}
+            >
               <CardProgressive
                 title="รายการทั้งหมด"
-                color="#e8f2fa"
-                list_item={17}
-                border_item="#3B94FF"
+                color={clickCard === 0 ? "#5E9DC8" : "#DCF0F7"}
+                list_item={dataSource && dataSource.result.length}
+                border_item={clickCard === 0 ? "#0C2C52" : "#5E9DC8"}
               />
             </div>
           </div>
           <div className="w-full md:w-1/4">
-            <div className="md:flex md:justify-center md:mx-0 mx-2">
+            <div
+              className="md:flex md:justify-center md:mx-0 mx-2"
+              onClick={() => normalizeData(2)}
+            >
               <CardProgressive
                 title="รอดำเนินการ"
-                color="#fff1ef"
-                list_item={12}
-                border_item="#e76580"
+                color={clickCard === 2 ? "#e76580" : "#fff1ef"}
+                list_item={
+                  dataSource?.result.filter((item) => item.status === 2).length
+                }
+                border_item={clickCard === 2 ? "#84002E" : "#e76580"}
               />
             </div>
           </div>
           <div className="w-full md:w-1/4">
-            <div className="md:flex md:justify-center md:mx-0 mx-2">
+            <div
+              className="md:flex md:justify-center md:mx-0 mx-2"
+              onClick={() => normalizeData(1)}
+            >
               <CardProgressive
                 title="กำลังดำเนินการ"
-                color="#ffffe4"
-                list_item={9}
-                border_item="#fddfa0"
+                color={clickCard === 1 ? "#FFDE00" : "#ffffe4"}
+                list_item={
+                  dataSource?.result.filter((item) => item.status === 1).length
+                }
+                border_item={clickCard === 1 ? "#CC9900" : "#fddfa0"}
               />
             </div>
           </div>
           <div className="w-full md:w-1/4">
-            <div className="md:flex md:justify-center md:mx-0 mx-2">
+            <div
+              className="md:flex md:justify-center md:mx-0 mx-2"
+              onClick={() => normalizeData(3)}
+            >
               <CardProgressive
                 title="สำเร็จ"
-                color="#f3ffd8"
-                list_item={12}
-                border_item="#c7f4a8"
+                color={clickCard === 3 ? "#99CC00" : "#f3ffd8"}
+                list_item={
+                  dataSource?.result.filter((item) => item.status === 3).length
+                }
+                border_item={clickCard === 3 ? "#669966" : "#c7f4a8"}
               />
             </div>
           </div>
         </div>
-
-        <div className="flex-none w-full mt-2">
-          <Table
-            dataSource={dataSource}
-            columns={columns}
-            pagination={{ position: ["topRight", "topRight"] }}
-            style={{ width: "100%" }}
-            scroll={{ x: "100%" }}
-          />
-        </div>
+        {isLoading ? (
+          <Skeleton active />
+        ) : (
+          <div className="flex-none w-full pt-5">
+            <Table
+              dataSource={filterData}
+              columns={columns}
+              pagination={false}
+              style={{ width: "100%" }}
+              scroll={{ x: "100%" }}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

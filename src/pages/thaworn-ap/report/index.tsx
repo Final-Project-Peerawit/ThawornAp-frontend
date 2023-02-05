@@ -1,10 +1,11 @@
-import { SaveOutlined } from "@ant-design/icons";
+import { CameraOutlined, PlusOutlined, SaveOutlined } from "@ant-design/icons";
 import {
   Button,
   Card,
   DatePicker,
   Form,
   Input,
+  Modal,
   PageHeader,
   Radio,
   Select,
@@ -28,7 +29,7 @@ export type IformInstanceValue = {
   typeReportId: number;
   placeId: number;
   fixId: number;
-  uploadFile: UploadProps[];
+  uploadFile: UploadFile[] | null;
   description: null | string;
 };
 
@@ -61,29 +62,53 @@ const report: React.FC = () => {
     );
   };
 
-  const onFinish = (values: IformInstanceValue): void => {
+  const getBase64 = (file: RcFile): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const [previewTitle, setPreviewTitle] = useState("");
+  const [fileList, setFileList] = useState([]);
+
+  const normFile = (e) => {
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e && e.fileList;
+  };
+
+  const handleFileChange = ({ fileList }) => {
+    setFileList(fileList);
+  };
+
+  const handleFormFinish = (values) => {
     console.log(values);
+  };
+
+  const handleCancel = () => setPreviewOpen(false);
+
+  const handlePreview = async (file: UploadFile) => {
+    file.preview = await getBase64(file.originFileObj as RcFile);
+
+    setPreviewImage(file.url || (file.preview as string));
+    setPreviewOpen(true);
+    setPreviewTitle(
+      file.name || file.url!.substring(file.url!.lastIndexOf("/") + 1)
+    );
+  };
+
+  const onFinish = (values: IformInstanceValue): void => {
     setIsOpen(!isOpen);
   };
 
   const disabledDate: RangePickerProps["disabledDate"] = (current) => {
     // Can not select days before today and today
     return current && current < dayjs().endOf("day");
-  };
-
-  const onPreview = async (file: UploadFile) => {
-    let src = file.url as string;
-    if (!src) {
-      src = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file.originFileObj as RcFile);
-        reader.onload = () => resolve(reader.result as string);
-      });
-    }
-    const image = new Image();
-    image.src = src;
-    const imgWindow = window.open(src);
-    imgWindow?.document.write(image.outerHTML);
   };
 
   useEffect(() => {
@@ -265,17 +290,29 @@ const report: React.FC = () => {
                   </Form.Item>
                 </div>
               </div>
-              <Form.Item name="uploadFile" label="แนบรูปเพิ่มเติม (JPG,PNG)">
-                <div className="px-10">
-                  <Upload
-                    action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                    listType="picture-card"
-                    onPreview={onPreview}
-                  >
-                    + Upload
-                  </Upload>
-                </div>
+              <Form.Item
+                name="uploadFile"
+                label="แนบรูปเพิ่มเติม (JPG,PNG)"
+                valuePropName="fileList"
+                getValueFromEvent={normFile}
+              >
+                <Upload listType="picture-card" onPreview={handlePreview}>
+                  + Upload
+                </Upload>
               </Form.Item>
+              <Modal
+                open={previewOpen}
+                title={previewTitle}
+                footer={null}
+                onCancel={handleCancel}
+              >
+                <img
+                  alt="example"
+                  style={{ width: "100%" }}
+                  src={previewImage}
+                />
+              </Modal>
+
               <Form.Item name="description" label="รายละเอียด :">
                 <div className="px-10">
                   <Input.TextArea rows={4} />

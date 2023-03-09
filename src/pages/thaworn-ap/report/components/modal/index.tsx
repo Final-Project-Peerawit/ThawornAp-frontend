@@ -36,7 +36,9 @@ function modals({ isOpen, onValueChange, form }: IProp): React.ReactElement {
 
   const handleOk = (): void => {
     const normalUploadFile: string[] = [];
-    form.uploadFile.map((event) => normalUploadFile.push(event.thumbUrl));
+    form.uploadFile.map((event) => {
+      return normalUploadFile.push(event.thumbUrl);
+    });
 
     const normal: IcreateReportData = {
       type_report_id: form.typeReportId,
@@ -63,7 +65,7 @@ function modals({ isOpen, onValueChange, form }: IProp): React.ReactElement {
         onCancel={handleCancel}
         footer={false}
       >
-        <div className="text-center">
+        <div className="text-center pt-5 px-10">
           <Typography.Title level={3}>
             คุณต้องการบันทึกรายการแจ้งซ่อมนี้หรือไม่ ?
           </Typography.Title>

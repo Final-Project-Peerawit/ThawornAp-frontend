@@ -37,18 +37,6 @@ type ITypeMockData = {
 export default function component(): React.ReactElement {
   const router = useRouter();
   const [edit, setEdit] = useState<boolean>(false);
-  const [mockData, setMockData] = useState<ITypeMockData>({
-    branch_name: "ลาดกระบัง",
-    room_number: 123,
-    date_report: "14-sep-2022 07:30:00",
-    type_report: "ภายในอาคาร",
-    place: "ห้องนอน",
-    fix: "แอร์",
-    description: "อยู่ๆแอร์ก็ดับ",
-    phone_contact: "0801234567",
-    agreement: "อนุญาติให้ช่างเข้ามาซ่อม",
-    time_fix: "21-sep-2022 07:30:00",
-  });
 
   const { data, isLoading } = useQuery({
     queryKey: ["datamock"],
@@ -71,23 +59,27 @@ export default function component(): React.ReactElement {
               current={data?.result.step}
               items={[
                 {
-                  title: "Login",
+                  title: "รอรับเรื่อง",
                   icon: <UserOutlined />,
                 },
                 {
-                  title: "Verification",
+                  title: "ยืนยันการรับเรื่อง",
                   icon: <SolutionOutlined />,
                 },
                 {
-                  title: "Pay",
+                  title: "ยืนยันวัน-เวลา",
                   icon: <SolutionOutlined />,
                 },
                 {
-                  title: "Done",
+                  title: "กำลังดำเนินการ",
                   icon: <SmileOutlined />,
                 },
                 {
-                  title: "Done",
+                  title: "ตรวจสอบหลังดำเนินการ",
+                  icon: <SmileOutlined />,
+                },
+                {
+                  title: "เสร็จสิ้น",
                   icon: <SmileOutlined />,
                 },
               ]}

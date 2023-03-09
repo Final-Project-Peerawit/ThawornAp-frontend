@@ -11,7 +11,6 @@ import {
   Form,
   Grid,
   Input,
-  InputNumber,
   PageHeader,
   Select,
   Skeleton,
@@ -130,10 +129,14 @@ const listReport: React.FC = () => {
       key: "createDate",
       render: (date: string) => {
         return (
-          <div>
-            <div>{date.split(" ")[0]}</div>
-            <div>เวลา {date.split(" ")[1]}</div>
-          </div>
+          <>
+            {date ? (
+              <>
+                <div>{date.split(" ")[0]}</div>
+                <div>เวลา {date.split(" ")[1]}</div>
+              </>
+            ) : null}
+          </>
         );
       },
     },

@@ -1,13 +1,8 @@
 import { DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { Button, message, Modal, Typography } from "antd";
 import React, { useState } from "react";
-import { IData } from "../..";
 
-interface IProp {
-  item: IData;
-}
-
-function modals({ item }: IProp): React.ReactElement {
+function modals({ item }): React.ReactElement {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const showModal = (): void => {
@@ -37,7 +32,7 @@ function modals({ item }: IProp): React.ReactElement {
             <ExclamationCircleOutlined />
           </Typography.Title>
           <Typography.Title level={3}>
-            คุณต้องการที่จะลบรหัสการแจ้ง {item?.id} ?
+            คุณต้องการที่จะลบผู้ใช้งานนี้หรือไม่ ?
           </Typography.Title>
         </div>
 

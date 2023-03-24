@@ -1,10 +1,13 @@
 import DatePicker from "@/components/date_picker";
 import {
   CheckCircleOutlined,
-  ClockCircleOutlined,
-  CloseCircleOutlined,
   FileTextOutlined,
+  HourglassOutlined,
+  ScheduleOutlined,
   SearchOutlined,
+  SmileOutlined,
+  SyncOutlined,
+  TableOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -20,17 +23,18 @@ import {
 } from "antd";
 import { ColumnsType } from "antd/lib/table";
 import React, { useEffect, useState } from "react";
-import CardProgressive from "./components/card_progressive";
 import Modals from "./components/modal";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { getListReportData } from "src/dataService/api_list_report/get";
 import { getTypeBranch } from "src/dataService/api_branch/get";
+import { getTypeStep } from "src/dataService/api_step/get";
 
 type IformInstanceValue = {
   branch: number;
   date: Date[];
   roomNumber: number;
+  step: number;
 };
 
 export type IData = {
@@ -50,8 +54,6 @@ export type IData = {
 const listReport: React.FC = () => {
   const [filterData, setFilterData] = useState<IData[]>();
 
-  const [clickCard, setClickCard] = useState<number>(0);
-
   const { RangePicker } = DatePicker;
 
   const [form] = Form.useForm<IformInstanceValue>();
@@ -62,10 +64,12 @@ const listReport: React.FC = () => {
     // const searchBox = filterData
     //   .filter((branch) => branch.branch === values.branch)
     //   .filter((room) => room.room_id === Number(values.roomNumber));
-    // setFilterData(searchBox);
     // const searchBox = filterData.filter(
     //   (room) => room.room_id === Number(values.roomNumber)
     // );
+    // console.log(searchBox);
+    // const searchBox = filterData.filter((item) => item.status == values.step);
+    // setFilterData(searchBox.length === 0 ? dataSource.result : searchBox);
     // const searchBox = filterData.filter(
     //   (branch) => branch.branch === values.branch
     // );
@@ -85,15 +89,10 @@ const listReport: React.FC = () => {
     queryFn: async () => getTypeBranch(),
   });
 
-  const normalizeData = (status: number): void => {
-    setClickCard(status);
-    const result = dataSource.result.filter((data) => data.status === status);
-    if (status === 0) {
-      setFilterData(dataSource.result);
-    } else {
-      setFilterData(result);
-    }
-  };
+  const { data: dataStep, isLoading: isLoadingStep } = useQuery({
+    queryKey: ["step_list"],
+    queryFn: async () => getTypeStep(),
+  });
 
   const columns: ColumnsType<IData> = [
     {
@@ -182,31 +181,58 @@ const listReport: React.FC = () => {
       align: "center" as const,
       render: (status: number) => {
         switch (status) {
+          case 0:
+            return (
+              <Tag
+                icon={<HourglassOutlined style={{ marginBottom: 5 }} />}
+                color="default"
+              >
+                รอรับเรื่อง
+              </Tag>
+            );
           case 1:
             return (
               <Tag
-                icon={<ClockCircleOutlined style={{ marginBottom: 5 }} />}
+                icon={<CheckCircleOutlined style={{ marginBottom: 5 }} />}
                 color="warning"
               >
-                กำลังดำเนินการ
+                ยืนยันการรับเรื่อง
               </Tag>
             );
           case 2:
             return (
               <Tag
-                icon={<CloseCircleOutlined style={{ marginBottom: 5 }} />}
-                color="error"
+                icon={<TableOutlined style={{ marginBottom: 5 }} />}
+                color="warning"
               >
-                รอดำเนินการ
+                ยืนยันวัน-เวลา
               </Tag>
             );
           case 3:
             return (
               <Tag
-                icon={<CheckCircleOutlined style={{ marginBottom: 5 }} />}
+                icon={<SyncOutlined style={{ marginBottom: 5 }} />}
+                color="processing"
+              >
+                กำลังดำเนินการ
+              </Tag>
+            );
+          case 4:
+            return (
+              <Tag
+                icon={<ScheduleOutlined style={{ marginBottom: 5 }} />}
+                color="warning"
+              >
+                ตรวจสอบหลังดำเนินการ
+              </Tag>
+            );
+          case 5:
+            return (
+              <Tag
+                icon={<SmileOutlined style={{ marginBottom: 5 }} />}
                 color="success"
               >
-                สำเร็จ
+                เสร็จสิ้น
               </Tag>
             );
           default:
@@ -250,7 +276,7 @@ const listReport: React.FC = () => {
       <div className="px-10 pb-10">
         <Form form={form} layout="vertical" onFinish={onFinish}>
           <div className="flex flex-wrap">
-            <div className="w-full md:w-1/3 md:pr-5 md:pt-0">
+            <div className="w-full md:w-1/4 md:pr-5 md:pt-0">
               <Form.Item name={"branch"} label="สาขา">
                 <Select
                   className="w-full"
@@ -265,15 +291,30 @@ const listReport: React.FC = () => {
                 />
               </Form.Item>
             </div>
-            <div className="w-full md:w-1/3 md:pr-5 md:pt-0">
+            <div className="w-full md:w-1/4 md:pr-5 md:pt-0">
               <Form.Item name={"date"} label="ช่วงวันที่">
                 <RangePicker style={{ width: "100%" }} />
               </Form.Item>
             </div>
-            <div className="w-full md:w-1/3 md:flex md:justify-between">
-              <div>
+            <div className="w-full md:w-1/4 md:pr-5 md:pt-0">
+              <Form.Item name={"step"} label="สถานะ">
+                <Select
+                  className="w-full"
+                  placeholder="เลือกสถานะ"
+                  allowClear
+                  options={dataStep?.result.map((item) => ({
+                    label: item.step_name,
+                    value: item.step_id,
+                  }))}
+                  loading={isLoadingStep}
+                  disabled={isLoadingStep}
+                />
+              </Form.Item>
+            </div>
+            <div className="w-full md:w-1/4 md:flex md:justify-between">
+              <div className="md:pr-5">
                 <Form.Item name={"roomNumber"} label="เลขห้อง">
-                  <Input type="number" placeholder="กรอกเลขห้อง" />
+                  <Input type="number" placeholder="กรอกเลขห้อง" allowClear />
                 </Form.Item>
               </div>
               <div style={{ paddingTop: screen.md ? "1.9rem" : "0" }}>
@@ -290,66 +331,6 @@ const listReport: React.FC = () => {
           </div>
         </Form>
 
-        <div className="flex flex-wrap pt-10">
-          <div className="w-full md:w-1/4">
-            <div
-              className="md:flex md:justify-center md:mx-0 mx-2"
-              onClick={() => normalizeData(0)}
-            >
-              <CardProgressive
-                title="รายการทั้งหมด"
-                color={clickCard === 0 ? "#5E9DC8" : "#DCF0F7"}
-                list_item={dataSource && dataSource.result.length}
-                border_item={clickCard === 0 ? "#0C2C52" : "#5E9DC8"}
-              />
-            </div>
-          </div>
-          <div className="w-full md:w-1/4">
-            <div
-              className="md:flex md:justify-center md:mx-0 mx-2"
-              onClick={() => normalizeData(2)}
-            >
-              <CardProgressive
-                title="รอดำเนินการ"
-                color={clickCard === 2 ? "#e76580" : "#fff1ef"}
-                list_item={
-                  dataSource?.result.filter((item) => item.status === 2).length
-                }
-                border_item={clickCard === 2 ? "#84002E" : "#e76580"}
-              />
-            </div>
-          </div>
-          <div className="w-full md:w-1/4">
-            <div
-              className="md:flex md:justify-center md:mx-0 mx-2"
-              onClick={() => normalizeData(1)}
-            >
-              <CardProgressive
-                title="กำลังดำเนินการ"
-                color={clickCard === 1 ? "#FFDE00" : "#ffffe4"}
-                list_item={
-                  dataSource?.result.filter((item) => item.status === 1).length
-                }
-                border_item={clickCard === 1 ? "#CC9900" : "#fddfa0"}
-              />
-            </div>
-          </div>
-          <div className="w-full md:w-1/4">
-            <div
-              className="md:flex md:justify-center md:mx-0 mx-2"
-              onClick={() => normalizeData(3)}
-            >
-              <CardProgressive
-                title="สำเร็จ"
-                color={clickCard === 3 ? "#99CC00" : "#f3ffd8"}
-                list_item={
-                  dataSource?.result.filter((item) => item.status === 3).length
-                }
-                border_item={clickCard === 3 ? "#669966" : "#c7f4a8"}
-              />
-            </div>
-          </div>
-        </div>
         {isLoading ? (
           <Skeleton active />
         ) : (

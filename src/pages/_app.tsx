@@ -55,6 +55,7 @@ export default function MyApp({ Component, pageProps }) {
                   <div
                     key={link.name}
                     className="md:ml-8 text-xl md:my-0 mt-2 p-3 border-b border-gray-300 flex justify-center"
+                    onClick={() => setOpen(!open)}
                   >
                     <Link href={link.link}>{link.name}</Link>
                   </div>
@@ -74,8 +75,8 @@ export default function MyApp({ Component, pageProps }) {
       )}
 
       {/*Don't remove*/}
-      <div className="w-full h-screen">
-        <div className="mx-5 md:mx-10 h-screen">
+      <div className="bg-gradient-to-b from-blue-200 min-h-screen">
+        <div className="mx-5 md:mx-10">
           <QueryClientProvider client={queryClient}>
             <Component {...pageProps} />
           </QueryClientProvider>

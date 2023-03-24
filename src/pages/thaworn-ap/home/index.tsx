@@ -1,14 +1,19 @@
-import { PageHeader } from "antd";
+import { Button, PageHeader } from "antd";
 import React from "react";
-import Texteditor from "./components/texteditor/textEditor";
+import Cards from "./components/cards/card";
 
 const home: React.FC = () => {
   return (
-    <div className="relative w-full h-screen">
+    <div className="relative w-full">
       <PageHeader title="หน้าแรก" />
       <div className="flex justify-center h-full">
-        <div className="max-w-[1000px] w-full mx-auto px-8 ">
-          <Texteditor />
+        <div className="max-w-[700px] w-full px-8">
+          <div className=" pb-10">
+            <Button type="primary" block>
+              สร้างโพสต์
+            </Button>
+          </div>
+          <Cards />
         </div>
       </div>
     </div>

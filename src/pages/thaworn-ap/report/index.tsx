@@ -2,6 +2,7 @@ import { CameraOutlined, PlusOutlined, SaveOutlined } from "@ant-design/icons";
 import {
   Button,
   Card,
+  Checkbox,
   DatePicker,
   Form,
   Input,
@@ -22,6 +23,7 @@ import { useQuery } from "react-query";
 import { getTypePlace } from "src/dataService/api_@typeReportId_typePlace/get";
 import { getTypeFix } from "src/dataService/api_@placeId_typefix/get";
 import { RcFile } from "antd/lib/upload";
+import { getIAdminEditData } from "src/dataService/api_@personnelManagement_edit/get";
 
 dayjs.extend(customParseFormat);
 
@@ -317,6 +319,12 @@ const report: React.FC = () => {
                 <div className="px-10">
                   <Input.TextArea rows={4} />
                 </div>
+              </Form.Item>
+              <Form.Item name="allow" valuePropName="checked">
+                <Checkbox>
+                  กรณีที่ผู้เข้าพักไม่อยู่ห้อง
+                  อนุญาติให้ช่างพร้อมกับเจ้าหน้าที่ส่วนกลางเข้าดำเนินการแก้ไข
+                </Checkbox>
               </Form.Item>
               <div className="text-center">
                 <Button type="primary" htmlType="submit">

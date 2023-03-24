@@ -1,9 +1,12 @@
 import {
+  CheckCircleOutlined,
   EditOutlined,
+  HourglassOutlined,
   SaveOutlined,
+  ScheduleOutlined,
   SmileOutlined,
-  SolutionOutlined,
-  UserOutlined,
+  SyncOutlined,
+  TableOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -53,30 +56,30 @@ export default function component(): React.ReactElement {
       {isLoading ? (
         <Skeleton active />
       ) : (
-        <div>
+        <div className="pb-10">
           <div className="pb-10 px-10">
             <Steps
               current={data?.result.step}
               items={[
                 {
                   title: "รอรับเรื่อง",
-                  icon: <UserOutlined />,
+                  icon: <HourglassOutlined />,
                 },
                 {
                   title: "ยืนยันการรับเรื่อง",
-                  icon: <SolutionOutlined />,
+                  icon: <CheckCircleOutlined />,
                 },
                 {
                   title: "ยืนยันวัน-เวลา",
-                  icon: <SolutionOutlined />,
+                  icon: <TableOutlined />,
                 },
                 {
                   title: "กำลังดำเนินการ",
-                  icon: <SmileOutlined />,
+                  icon: <SyncOutlined />,
                 },
                 {
                   title: "ตรวจสอบหลังดำเนินการ",
-                  icon: <SmileOutlined />,
+                  icon: <ScheduleOutlined />,
                 },
                 {
                   title: "เสร็จสิ้น",
@@ -260,7 +263,7 @@ export default function component(): React.ReactElement {
                           scope="row"
                           className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
                         >
-                          รหัสการแจ้ง
+                          ยืนยันการรับเรื่อง
                         </th>
                         <td className="px-6 py-4">
                           <Input type="text" disabled={!edit} />
@@ -271,7 +274,7 @@ export default function component(): React.ReactElement {
                           scope="row"
                           className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
                         >
-                          สาขา
+                          ยืนยันวัน - เวลา
                         </th>
                         <td className="px-6 py-4">
                           <Input type="text" disabled={!edit} />
@@ -282,7 +285,7 @@ export default function component(): React.ReactElement {
                           scope="row"
                           className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
                         >
-                          เลขห้อง
+                          ยืนยันผลการซ่อม
                         </th>
                         <td className="px-6 py-4">
                           <Input type="text" disabled={!edit} />
@@ -293,7 +296,7 @@ export default function component(): React.ReactElement {
                           scope="row"
                           className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
                         >
-                          วันที่และเวลาแจ้ง
+                          ค่าอุปกรณ์
                         </th>
                         <td className="px-6 py-4">
                           <Input type="text" disabled={!edit} />
@@ -304,7 +307,7 @@ export default function component(): React.ReactElement {
                           scope="row"
                           className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
                         >
-                          ประเภทการแจ้ง
+                          ค่าแรงช่าง
                         </th>
                         <td className="px-6 py-4">
                           <Input type="text" disabled={!edit} />

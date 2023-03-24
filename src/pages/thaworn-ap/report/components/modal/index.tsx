@@ -36,7 +36,7 @@ function modals({ isOpen, onValueChange, form }: IProp): React.ReactElement {
 
   const handleOk = (): void => {
     const normalUploadFile: string[] = [];
-    form.uploadFile.map((event) => {
+    form.uploadFile?.map((event) => {
       return normalUploadFile.push(event.thumbUrl);
     });
 

@@ -2,6 +2,7 @@ import React from "react";
 import ReactEcharts from "echarts-for-react";
 import { useQuery } from "react-query";
 import { getBarChart } from "src/dataService/api_@branchManagement_tab_barChart/get";
+import { Skeleton } from "antd";
 
 export default function barChart(): React.ReactElement {
   const { data, isLoading } = useQuery({
@@ -69,5 +70,7 @@ export default function barChart(): React.ReactElement {
       },
     ],
   };
-  return <ReactEcharts option={option} />;
+  return (
+    <>{isLoading ? <Skeleton active /> : <ReactEcharts option={option} />}</>
+  );
 }

@@ -27,7 +27,7 @@ const mockData: IListReportData[] = [
     palce: "โถงเดิน",
     fix: "หลอดไฟ",
     problem: "ไฟดับ",
-    status: 1,
+    status: 0,
     description: "รายละเอียด",
   },
   {
@@ -40,7 +40,7 @@ const mockData: IListReportData[] = [
     palce: "โถงเดิน",
     fix: "หลอดไฟ",
     problem: "ไฟดับ",
-    status: 2,
+    status: 1,
     description: "รายละเอียด",
   },
   {
@@ -53,7 +53,7 @@ const mockData: IListReportData[] = [
     palce: "โถงเดิน",
     fix: "หลอดไฟ",
     problem: "ไฟดับ",
-    status: 3,
+    status: 2,
     description: "รายละเอียด",
   },
   {
@@ -79,7 +79,7 @@ const mockData: IListReportData[] = [
     palce: "โถงเดิน",
     fix: "หลอดไฟ",
     problem: "ไฟดับ",
-    status: 1,
+    status: 4,
     description: "รายละเอียด",
   },
   {
@@ -92,7 +92,7 @@ const mockData: IListReportData[] = [
     palce: "โถงเดิน",
     fix: "หลอดไฟ",
     problem: "ไฟดับ",
-    status: 2,
+    status: 5,
     description: "รายละเอียด",
   },
   {

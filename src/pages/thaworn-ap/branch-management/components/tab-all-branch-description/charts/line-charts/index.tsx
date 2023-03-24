@@ -2,6 +2,7 @@ import React from "react";
 import ReactEcharts from "echarts-for-react";
 import { useQuery } from "react-query";
 import { getLineChart } from "src/dataService/api_@branchManagement_tabAll_lineChart/get";
+import { Skeleton } from "antd";
 
 export default function lineChart(): React.ReactElement {
   const { data, isLoading } = useQuery({
@@ -52,5 +53,7 @@ export default function lineChart(): React.ReactElement {
       },
     ],
   };
-  return <ReactEcharts option={option} />;
+  return (
+    <>{isLoading ? <Skeleton active /> : <ReactEcharts option={option} />}</>
+  );
 }

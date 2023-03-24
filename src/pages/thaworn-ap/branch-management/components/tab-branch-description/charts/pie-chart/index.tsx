@@ -2,6 +2,7 @@ import React from "react";
 import ReactEcharts from "echarts-for-react";
 import { useQuery } from "react-query";
 import { getNormalPieChart } from "src/dataService/api_@branchManagement_tab_pieChart/get";
+import { Skeleton } from "antd";
 
 export default function pieChart(): React.ReactElement {
   const { data, isLoading } = useQuery({
@@ -36,5 +37,7 @@ export default function pieChart(): React.ReactElement {
       },
     ],
   };
-  return <ReactEcharts option={option} />;
+  return (
+    <>{isLoading ? <Skeleton active /> : <ReactEcharts option={option} />}</>
+  );
 }

@@ -39,12 +39,7 @@ const AllBranchDescription = (): React.ReactElement => {
           </div>
         </div>
         <div className="bg-white flex-col rounded shadow-sm p-4 text-md font-bold">
-          <div className="flex justify-between">
-            ภายในห้องพัก
-            <Button type="primary" ghost>
-              รายละเอียดเพิ่มเติม
-            </Button>
-          </div>
+          <div className="flex justify-between">ภายในห้องพัก</div>
           <div className="p-5">
             <PrivatePieChart />
           </div>

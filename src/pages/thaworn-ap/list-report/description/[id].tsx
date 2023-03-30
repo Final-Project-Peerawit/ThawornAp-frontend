@@ -214,6 +214,27 @@ export default function component(): React.ReactElement {
                         </th>
                         <td className="px-6 py-4">{data?.result.time_fix}</td>
                       </tr>
+                      <tr className="border-b border-gray-200 dark:border-gray-700">
+                        <th
+                          scope="row"
+                          className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
+                        >
+                          ยืนยันผลการดำเนินการ
+                        </th>
+                        <td className="px-6 py-4 space-x-4">
+                          <Button type="primary" ghost className="rounded-md">
+                            ยืนยันผลการดำเนินการ
+                          </Button>
+                          <Button
+                            type="primary"
+                            danger
+                            ghost
+                            className="rounded-md"
+                          >
+                            แก้ไขผลการดำเนินการ
+                          </Button>
+                        </td>
+                      </tr>
                     </tbody>
                   </table>
                 </div>
@@ -266,7 +287,14 @@ export default function component(): React.ReactElement {
                           ยืนยันการรับเรื่อง
                         </th>
                         <td className="px-6 py-4">
-                          <Input type="text" disabled={!edit} />
+                          <Button
+                            type="primary"
+                            ghost
+                            className="rounded-md"
+                            disabled={!edit}
+                          >
+                            ยืนยันคำร้อง
+                          </Button>
                         </td>
                       </tr>
                       <tr className="border-b border-gray-200 dark:border-gray-700">
@@ -277,7 +305,14 @@ export default function component(): React.ReactElement {
                           ยืนยันวัน - เวลา
                         </th>
                         <td className="px-6 py-4">
-                          <Input type="text" disabled={!edit} />
+                          <Button
+                            type="primary"
+                            ghost
+                            className="rounded-md"
+                            disabled={!edit}
+                          >
+                            ยืนยันวัน - เวลา
+                          </Button>
                         </td>
                       </tr>
                       <tr className="border-b border-gray-200 dark:border-gray-700">
@@ -288,7 +323,14 @@ export default function component(): React.ReactElement {
                           ยืนยันผลการซ่อม
                         </th>
                         <td className="px-6 py-4">
-                          <Input type="text" disabled={!edit} />
+                          <Button
+                            type="primary"
+                            ghost
+                            className="rounded-md"
+                            disabled={!edit}
+                          >
+                            ยืนยันผลการดำเนินการ
+                          </Button>
                         </td>
                       </tr>
                       <tr className="border-b border-gray-200 dark:border-gray-700">

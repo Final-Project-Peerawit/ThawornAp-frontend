@@ -1,20 +1,29 @@
+import axios from "axios";
+
 export type IcreateLoginData = {
   email: string;
   password: string;
 };
 
 export type IcreateLoginDataBody = {
-  result: true;
+  result: {
+    message: string;
+    tokens: string;
+  };
 };
 
 type IProp = {
-  customer_id: string;
   data: IcreateLoginData;
 };
 
-export function createData({
-  customer_id,
+export async function createData({
   data,
 }: IProp): Promise<IcreateLoginDataBody> {
-  return Promise.resolve({ result: true });
+  const result = await axios.post(`${process.env.REACT_APP_URL}/api/login`, {
+    email: data.email,
+    password: data.password,
+  });
+  return Promise.resolve({
+    result: { message: result.data.message, tokens: result.data.tokens },
+  });
 }

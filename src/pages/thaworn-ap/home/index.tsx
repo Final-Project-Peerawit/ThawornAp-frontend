@@ -2,7 +2,7 @@ import { Button, PageHeader } from "antd";
 import React from "react";
 import Cards from "./components/cards/card";
 
-const home: React.FC = () => {
+const home = (): React.ReactElement => {
   return (
     <div className="relative w-full">
       <PageHeader title="หน้าแรก" />

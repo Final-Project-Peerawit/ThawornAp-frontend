@@ -1,10 +1,38 @@
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Form, Input } from "antd";
+import { Button, Checkbox, Form, Input, message } from "antd";
+import { useAtom } from "jotai";
+import { useRouter } from "next/router";
 import React from "react";
+import { useMutation } from "react-query";
+import { IcreateLoginData, createData } from "src/dataService/api_login/post";
+import { authentication } from "src/hook/persistanceData";
 
 export default function loginPage(): React.ReactElement {
-  const onFinish = (values: any) => {
-    console.log("Received values of form: ", values);
+  const [form] = Form.useForm<IcreateLoginData>();
+  const [, setAuth] = useAtom(authentication);
+  const router = useRouter();
+
+  const { mutate, isLoading } = useMutation({
+    mutationKey: ["login"],
+    mutationFn: async (value: IcreateLoginData) => {
+      return createData({ data: value });
+    },
+    onSuccess: (result) => {
+      setAuth(result.result.tokens);
+      message.success("Create Success");
+      router.push("/thaworn-ap/home");
+    },
+    onError: () => {
+      message.error("Create Error");
+    },
+  });
+
+  const onFinish = (values: IcreateLoginData) => {
+    const normalResult: IcreateLoginData = {
+      email: values.email,
+      password: values.password,
+    };
+    mutate(normalResult);
   };
 
   return (
@@ -17,9 +45,10 @@ export default function loginPage(): React.ReactElement {
             className="login-form"
             initialValues={{ remember: true }}
             onFinish={onFinish}
+            form={form}
           >
             <Form.Item
-              name="username"
+              name="email"
               rules={[
                 { required: true, message: "Please input your Username!" },
               ]}
@@ -55,6 +84,8 @@ export default function loginPage(): React.ReactElement {
                   type="primary"
                   htmlType="submit"
                   className="login-form-button w-full"
+                  loading={isLoading}
+                  disabled={isLoading}
                 >
                   Log in
                 </Button>

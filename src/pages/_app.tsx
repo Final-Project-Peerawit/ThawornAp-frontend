@@ -2,33 +2,57 @@ import "antd/dist/antd.css";
 import "../styles/vars.css";
 import Link from "next/link";
 import "../styles/global.css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   CloseOutlined,
   MenuOutlined,
   UpCircleOutlined,
 } from "@ant-design/icons";
-import { Grid } from "antd";
+import { Grid, Skeleton, Spin } from "antd";
 import { useRouter } from "next/router";
 import { QueryClientProvider, QueryClient } from "react-query";
+import { useAtom } from "jotai";
+import { authentication } from "src/hook/persistanceData";
 
 export default function MyApp({ Component, pageProps }) {
+  const [auth, setAuth] = useAtom(authentication);
   const Links = [
     { name: "หน้าแรก", link: "/thaworn-ap/home" },
     { name: "แจ้งปัญหา", link: "/thaworn-ap/report" },
     { name: "รายการแจ้งซ่อม", link: "/thaworn-ap/list-report" },
     { name: "จัดการสาขา", link: "/thaworn-ap/branch-management" },
     { name: "จัดการเจ้าหน้าที่", link: "/thaworn-ap/personnel-management" },
-    { name: "ออกจากระบบ", link: "/thaworn-ap/" },
+    { name: "ออกจากระบบ", link: "/thaworn-ap/login" },
   ];
+
+  const isLogout = (link: string) => {
+    if (link === "/thaworn-ap/login") {
+      setAuth(undefined);
+    }
+  };
+
+  const router = useRouter();
 
   const screen = Grid.useBreakpoint();
 
   const [open, setOpen] = useState(false);
 
+  const checkAuth =
+    !auth &&
+    router.pathname !== "/thaworn-ap/login" &&
+    router.pathname !== "/thaworn-ap/register";
+
   const [queryClient] = React.useState(() => new QueryClient());
 
-  const router = useRouter();
+  useEffect(() => {
+    if (checkAuth) {
+      router.push("/thaworn-ap/login");
+    }
+  }, []);
+
+  if (checkAuth) {
+    return <div></div>;
+  }
 
   return (
     <div className=" w-full">
@@ -65,7 +89,9 @@ export default function MyApp({ Component, pageProps }) {
               <div className="flex space-x-5">
                 {Links.map((link) => (
                   <div key={link.name} className="text-md font-semibold">
-                    <Link href={link.link}>{link.name}</Link>
+                    <a href={link.link} onClick={() => isLogout(link.link)}>
+                      {link.name}
+                    </a>
                   </div>
                 ))}
               </div>

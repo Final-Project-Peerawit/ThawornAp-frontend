@@ -282,6 +282,9 @@ const listReport: React.FC = () => {
 
   useEffect(() => {
     setFilterData(dataSource?.result);
+    form.setFieldsValue({
+      branch : auth.branch_id === 0 ? undefined : auth.branch_id
+    })
   }, [dataSource?.result]);
 
   return (
@@ -301,7 +304,7 @@ const listReport: React.FC = () => {
                     value: item.branch_id,
                   }))}
                   loading={isLoadingBranch}
-                  disabled={isLoadingBranch}
+                  disabled={isLoadingBranch ||  auth.branch_id === 0 ? undefined : true}
                 />
               </Form.Item>
             </div>

@@ -1,48 +1,80 @@
 import "antd/dist/antd.css";
 import "../styles/vars.css";
-import Link from "next/link";
 import "../styles/global.css";
 import React, { useEffect, useState } from "react";
 import {
-  CloseOutlined,
-  MenuOutlined,
-  UpCircleOutlined,
+  ExportOutlined,
+  FileAddOutlined,
+  FundOutlined,
+  HomeOutlined,
+  SolutionOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
-import { Grid, Skeleton, Spin } from "antd";
+import { Layout, Menu, Typography } from "antd";
 import { useRouter } from "next/router";
 import { QueryClientProvider, QueryClient } from "react-query";
 import { useAtom } from "jotai";
 import { authentication } from "src/hook/persistanceData";
 
+const { Header, Sider, Content, Footer } = Layout;
+
 export default function MyApp({ Component, pageProps }) {
   const [auth, setAuth] = useAtom(authentication);
-  const Links = [
-    { name: "หน้าแรก", link: "/thaworn-ap/home" },
-    { name: "แจ้งปัญหา", link: "/thaworn-ap/report" },
-    { name: "รายการแจ้งซ่อม", link: "/thaworn-ap/list-report" },
-    { name: "จัดการสาขา", link: "/thaworn-ap/branch-management" },
-    { name: "จัดการเจ้าหน้าที่", link: "/thaworn-ap/personnel-management" },
-    { name: "ออกจากระบบ", link: "/thaworn-ap/login" },
-  ];
-
-  const isLogout = (link: string) => {
-    if (link === "/thaworn-ap/login") {
-      setAuth(undefined);
-    }
-  };
-
   const router = useRouter();
-
-  const screen = Grid.useBreakpoint();
-
-  const [open, setOpen] = useState(false);
-
   const checkAuth =
     !auth &&
     router.pathname !== "/thaworn-ap/login" &&
     router.pathname !== "/thaworn-ap/register";
 
+  const [collapsed, setCollapsed] = useState(false);
   const [queryClient] = React.useState(() => new QueryClient());
+
+  const items = [
+    {
+      key: "1",
+      icon: <HomeOutlined />,
+      label: "หน้าแรก",
+      link: "/thaworn-ap/home",
+    },
+    {
+      key: "2",
+      icon: <FileAddOutlined />,
+      label: "แจ้งปัญหา",
+      link: "/thaworn-ap/report",
+    },
+    {
+      key: "3",
+      icon: <SolutionOutlined />,
+      label: "รายการแจ้งซ่อม",
+      link: "/thaworn-ap/list-report",
+    },
+    {
+      key: "4",
+      icon: <FundOutlined />,
+      label: "จัดการสาขา",
+      link: "/thaworn-ap/branch-management",
+    },
+    {
+      key: "5",
+      icon: <UserOutlined />,
+      label: "จัดการเจ้าหน้าที่",
+      link: "/thaworn-ap/personnel-management",
+    },
+    {
+      key: "6",
+      icon: <ExportOutlined />,
+      label: "ออกจากระบบ",
+      link: "/thaworn-ap/login",
+    },
+  ];
+
+  const routerPage = (key: string): void => {
+    const found = items.find((item) => item.key === key);
+    if (key === "6") {
+      setAuth(undefined);
+    }
+    router.push(found.link);
+  };
 
   useEffect(() => {
     if (checkAuth) {
@@ -55,59 +87,48 @@ export default function MyApp({ Component, pageProps }) {
   }
 
   return (
-    <div className=" w-full">
+    <>
       {router.pathname === "/thaworn-ap/register" ||
-      router.pathname === "/thaworn-ap/login" ? null : (
-        <div
-          className="mb:flex items-center justify-between md:flex py-4 md:px-10 px-7"
-          style={{ backgroundColor: "#FEA929" }}
-        >
-          <div className="font-bold text-2xl cursor-pointer flex items-center text-gray-800">
-            <span></span>
-            ThawornAp
-          </div>
-          <div
-            onClick={() => setOpen(!open)}
-            className="text-3xl absolute right-8 top-2 cursor-pointer md:hidden"
-          >
-            {!open ? <MenuOutlined /> : <CloseOutlined />}
-          </div>
-          <div>
-            {!screen.md ? (
-              open ? (
-                Links.map((link) => (
-                  <div
-                    key={link.name}
-                    className="md:ml-8 text-xl md:my-0 mt-2 p-3 border-b border-gray-300 flex justify-center"
-                    onClick={() => setOpen(!open)}
-                  >
-                    <Link href={link.link}>{link.name}</Link>
-                  </div>
-                ))
-              ) : null
-            ) : (
-              <div className="flex space-x-5">
-                {Links.map((link) => (
-                  <div key={link.name} className="text-md font-semibold">
-                    <a href={link.link} onClick={() => isLogout(link.link)}>
-                      {link.name}
-                    </a>
-                  </div>
-                ))}
+      router.pathname === "/thaworn-ap/login" ? (
+        <QueryClientProvider client={queryClient}>
+          <Component {...pageProps} />
+        </QueryClientProvider>
+      ) : (
+        <Layout style={{ height: "100%" }}>
+          <Sider trigger={null} collapsible collapsed={collapsed}>
+            <Menu
+              theme="dark"
+              mode="inline"
+              defaultSelectedKeys={["1"]}
+              onClick={(value) => routerPage(value.key)}
+              items={items.map((item) => ({
+                key: item.key,
+                icon: item.icon,
+                label: item.label,
+              }))}
+            />
+          </Sider>
+          <Layout className="site-layout">
+            <Header style={{ padding: 0, background: "white" }}>
+              <div className="flex justify-center">
+                <Typography.Title level={2}>Thaworn Apartment</Typography.Title>
               </div>
-            )}
-          </div>
-        </div>
+            </Header>
+            <Content style={{ height: "100%" }}>
+              <QueryClientProvider client={queryClient}>
+                <div className="p-10 min-h-screen">
+                  <div className="rounded-lg bg-white shadow-lg">
+                    <Component {...pageProps} />
+                  </div>
+                </div>
+              </QueryClientProvider>
+            </Content>
+            <Footer style={{ textAlign: "center", background: "white" }}>
+              Ant Design ©2023 Created by Ant UED
+            </Footer>
+          </Layout>
+        </Layout>
       )}
-
-      {/*Don't remove*/}
-      <div className="bg-gradient-to-b from-blue-200 min-h-screen">
-        <div className="mx-5 md:mx-10">
-          <QueryClientProvider client={queryClient}>
-            <Component {...pageProps} />
-          </QueryClientProvider>
-        </div>
-      </div>
-    </div>
+    </>
   );
 }

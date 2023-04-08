@@ -29,6 +29,8 @@ import { useQuery } from "react-query";
 import { getListReportData } from "src/dataService/api_list_report/get";
 import { getTypeBranch } from "src/dataService/api_branch/get";
 import { getTypeStep } from "src/dataService/api_step/get";
+import { useAtom } from "jotai";
+import { authentication } from "src/hook/persistanceData";
 
 type IformInstanceValue = {
   branch: number;
@@ -53,6 +55,7 @@ export type IData = {
 
 const listReport: React.FC = () => {
   const [filterData, setFilterData] = useState<IData[]>();
+  const [auth] = useAtom(authentication);
 
   const { RangePicker } = DatePicker;
 
@@ -93,6 +96,17 @@ const listReport: React.FC = () => {
     queryKey: ["step_list"],
     queryFn: async () => getTypeStep(),
   });
+
+  const getBranchByLoginId  = () :string => {
+    switch(auth.branch_id)
+    {
+      case 0 :  return 'Admin';
+      case 1 :  return 'ลาดพร้าว71';
+      case 2 :  return 'ลาดพร้าว78';
+      case 3 :  return 'ลาดกระบัง';
+    }
+    
+  }
 
   const columns: ColumnsType<IData> = [
     {
@@ -271,8 +285,8 @@ const listReport: React.FC = () => {
   }, [dataSource?.result]);
 
   return (
-    <div className="flex-initial">
-      <PageHeader title="รายการแจ้งซ่อม" />
+    <div>
+      <PageHeader title="รายการแจ้งซ่อม"  subTitle={getBranchByLoginId()}/>
       <div className="px-10 pb-10">
         <Form form={form} layout="vertical" onFinish={onFinish}>
           <div className="flex flex-wrap">

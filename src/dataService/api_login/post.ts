@@ -9,6 +9,7 @@ export type IcreateLoginDataBody = {
   result: {
     message: string;
     tokens: string;
+    branch_id:number
   };
 };
 
@@ -24,6 +25,6 @@ export async function createData({
     password: data.password,
   });
   return Promise.resolve({
-    result: { message: result.data.message, tokens: result.data.tokens },
+    result: { message: result.data.message, tokens: result.data.tokens  , branch_id:result.data.branch_id},
   });
 }

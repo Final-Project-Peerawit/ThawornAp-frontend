@@ -18,12 +18,15 @@ export default function loginPage(): React.ReactElement {
       return createData({ data: value });
     },
     onSuccess: (result) => {
-      setAuth(result.result.tokens);
-      message.success("Create Success");
+      setAuth({
+      token:result.result.tokens,
+      branch_id:result.result.branch_id    
+      });
+      message.success("เข้าสู่ระบบสำเร็จ");
       router.push("/thaworn-ap/home");
     },
     onError: () => {
-      message.error("Create Error");
+      message.error("เกิดข้อผิดพลาด อีเมลล์ หรือ รหัสผ่าน ผิด");
     },
   });
 

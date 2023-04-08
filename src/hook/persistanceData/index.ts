@@ -1,7 +1,16 @@
-import { atomWithStorage, createJSONStorage } from "jotai/utils";
+import { atomWithStorage } from "jotai/utils";
 
-export const authentication = atomWithStorage<string | undefined>(
+export type IAuth ={
+  token : string,
+  branch_id:number
+}
+
+export const authentication = atomWithStorage<IAuth | undefined>(
   "auth",
   undefined
-  //   sessionStorage
 );
+
+
+
+
+

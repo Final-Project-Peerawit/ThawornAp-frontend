@@ -20,7 +20,10 @@ export default function loginPage(): React.ReactElement {
     onSuccess: (result) => {
       setAuth({
       token:result.result.tokens,
-      branch_id:result.result.branch_id    
+      branch_id:result.result.branch_id,
+      role_id:result.result.role_id,
+      room_number:result.result.room_number,
+
       });
       message.success("เข้าสู่ระบบสำเร็จ");
       router.push("/thaworn-ap/home");

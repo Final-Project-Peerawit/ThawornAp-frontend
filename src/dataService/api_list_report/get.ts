@@ -12,6 +12,14 @@ export type IListReportData = {
   description: string;
 };
 
+export type IQueryListReport ={
+  branch_id:number | undefined,
+  start_dt:string | undefined,
+  end_dt:string | undefined,
+  state_id:number | undefined,
+  room_number:number | undefined
+}
+
 export type IListReportBody = {
   result: IListReportData[];
 };
@@ -149,6 +157,6 @@ const mockData: IListReportData[] = [
   },
 ];
 
-export function getListReportData(): Promise<IListReportBody> {
+export function getListReportData(query:IQueryListReport): Promise<IListReportBody> {
   return Promise.resolve({ result: mockData });
 }

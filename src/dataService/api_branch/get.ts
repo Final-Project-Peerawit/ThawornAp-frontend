@@ -13,11 +13,6 @@ export type ITypeBranchBody = {
 };
 
 export async function getTypeBranch(): Promise<ITypeBranchBody> {
- const getToken = Reflect.get(JSON.parse(localStorage.getItem('auth')) ,'token')
-  const result = await axios.get(`${process.env.REACT_APP_URL}/api/branch`, {
-    headers: {
-      Authorization: `Bearer ${getToken}`,
-    },
-  });
+  const result = await axios.get(`${process.env.REACT_APP_URL}/api/branch`);
   return Promise.resolve({ result: result.data.result });
 }

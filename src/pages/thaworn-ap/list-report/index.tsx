@@ -26,7 +26,10 @@ import React, { useEffect, useState } from "react";
 import Modals from "./components/modal";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
-import { getListReportData } from "src/dataService/api_list_report/get";
+import {
+  IQueryListReport,
+  getListReportData,
+} from "src/dataService/api_list_report/get";
 import { getTypeBranch } from "src/dataService/api_branch/get";
 import { getTypeStep } from "src/dataService/api_step/get";
 import { useAtom } from "jotai";
@@ -54,37 +57,21 @@ export type IData = {
 };
 
 const listReport: React.FC = () => {
-  const [filterData, setFilterData] = useState<IData[]>();
+  const [filterListReport, setFilterListReport] = useState<IQueryListReport>();
   const [auth] = useAtom(authentication);
+  const checkedRoomNumber = auth?.role_id === 2 || auth?.role_id === 3;
 
   const { RangePicker } = DatePicker;
 
   const [form] = Form.useForm<IformInstanceValue>();
-
-  const onFinish = (values: IformInstanceValue): void => {
-    // const findDate = filterData.filter((date) => date.createDate >= values.date[0] && date.createDate <= values.date[1])
-    // reduce + filterdata
-    // const searchBox = filterData
-    //   .filter((branch) => branch.branch === values.branch)
-    //   .filter((room) => room.room_id === Number(values.roomNumber));
-    // const searchBox = filterData.filter(
-    //   (room) => room.room_id === Number(values.roomNumber)
-    // );
-    // console.log(searchBox);
-    // const searchBox = filterData.filter((item) => item.status == values.step);
-    // setFilterData(searchBox.length === 0 ? dataSource.result : searchBox);
-    // const searchBox = filterData.filter(
-    //   (branch) => branch.branch === values.branch
-    // );
-  };
 
   const history = useRouter();
 
   const screen = Grid.useBreakpoint();
 
   const { data: dataSource, isLoading } = useQuery({
-    queryKey: ["report_list"],
-    queryFn: async () => getListReportData(),
+    queryKey: ["report_list", filterListReport],
+    queryFn: async () => getListReportData(filterListReport),
   });
 
   const { data: dataBranch, isLoading: isLoadingBranch } = useQuery({
@@ -97,16 +84,29 @@ const listReport: React.FC = () => {
     queryFn: async () => getTypeStep(),
   });
 
-  const getBranchByLoginId  = () :string => {
-    switch(auth.branch_id)
-    {
-      case 0 :  return 'Admin';
-      case 1 :  return 'ลาดพร้าว71';
-      case 2 :  return 'ลาดพร้าว78';
-      case 3 :  return 'ลาดกระบัง';
+  const onFinish = (values: IformInstanceValue): void => {
+    const normalResult: IQueryListReport = {
+      branch_id: values.branch,
+      room_number: values.roomNumber,
+      state_id: values.step,
+      start_dt: values.date ? String(new Date(values.date[0])) : undefined,
+      end_dt: values.date ? String(new Date(values.date[1])) : undefined,
+    };
+
+    setFilterListReport(normalResult);
+  };
+  const getBranchByLoginId = (): string => {
+    switch (auth?.branch_id) {
+      case 0:
+        return "สาขาทั้งหมด";
+      case 1:
+        return "ลาดพร้าว71";
+      case 2:
+        return "ลาดพร้าว78";
+      case 3:
+        return "ลาดกระบัง";
     }
-    
-  }
+  };
 
   const columns: ColumnsType<IData> = [
     {
@@ -281,15 +281,15 @@ const listReport: React.FC = () => {
   ];
 
   useEffect(() => {
-    setFilterData(dataSource?.result);
     form.setFieldsValue({
-      branch : auth.branch_id === 0 ? undefined : auth.branch_id
-    })
-  }, [dataSource?.result]);
+      branch: auth?.role_id === 3 ? undefined : auth.branch_id,
+      roomNumber: checkedRoomNumber ? undefined : auth.room_number,
+    });
+  }, []);
 
   return (
     <div>
-      <PageHeader title="รายการแจ้งซ่อม"  subTitle={getBranchByLoginId()}/>
+      <PageHeader title="รายการแจ้งซ่อม" subTitle={getBranchByLoginId()} />
       <div className="px-10 pb-10">
         <Form form={form} layout="vertical" onFinish={onFinish}>
           <div className="flex flex-wrap">
@@ -304,7 +304,9 @@ const listReport: React.FC = () => {
                     value: item.branch_id,
                   }))}
                   loading={isLoadingBranch}
-                  disabled={isLoadingBranch ||  auth.branch_id === 0 ? undefined : true}
+                  disabled={
+                    isLoadingBranch || auth?.role_id === 3 ? undefined : true
+                  }
                 />
               </Form.Item>
             </div>
@@ -331,7 +333,14 @@ const listReport: React.FC = () => {
             <div className="w-full md:w-1/4 md:flex md:justify-between">
               <div className="md:pr-5">
                 <Form.Item name={"roomNumber"} label="เลขห้อง">
-                  <Input type="number" placeholder="กรอกเลขห้อง" allowClear />
+                  <Input
+                    type="number"
+                    placeholder="กรอกเลขห้อง"
+                    allowClear
+                    disabled={
+                      isLoadingBranch || checkedRoomNumber ? undefined : true
+                    }
+                  />
                 </Form.Item>
               </div>
               <div style={{ paddingTop: screen.md ? "1.9rem" : "0" }}>
@@ -353,7 +362,7 @@ const listReport: React.FC = () => {
         ) : (
           <div className="flex-none w-full pt-5">
             <Table
-              dataSource={filterData}
+              dataSource={dataSource ? dataSource.result : undefined}
               columns={columns}
               pagination={false}
               style={{ width: "100%" }}

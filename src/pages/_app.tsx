@@ -3,11 +3,13 @@ import "../styles/vars.css";
 import "../styles/global.css";
 import React, { useEffect, useState } from "react";
 import {
+  BellFilled,
   ExportOutlined,
   FileAddOutlined,
   FundOutlined,
   HomeOutlined,
   SolutionOutlined,
+  TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { Grid, Layout, Menu, Typography } from "antd";
@@ -117,8 +119,27 @@ export default function MyApp({ Component, pageProps }) {
           </Sider>
           <Layout className="site-layout">
             <Header style={{ padding: 0, background: "white" }}>
-              <div className="flex justify-center">
-                <Typography.Title level={2}>Thaworn Apartment</Typography.Title>
+              <div className="flex flex-wrap">
+                <div className="w-0 lg:w-1/3"></div>
+                <div className="w-4/6 lg:w-1/3">
+                  <div className="flex items-center justify-end lg:justify-center pt-3">
+                    <Typography.Title level={screens.lg ? 3 : 4}>
+                      Thaworn Apartment
+                    </Typography.Title>
+                  </div>
+                </div>
+                <div className="w-2/6 lg:w-1/3">
+                  <div className="flex justify-end pr-5">
+                    <div className="flex space-x-5">
+                      <div>
+                        <BellFilled style={{ fontSize: 25 }} />
+                      </div>
+                      <div>
+                        <TeamOutlined style={{ fontSize: 25 }} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </Header>
             <Content style={{ height: "100%" }}>

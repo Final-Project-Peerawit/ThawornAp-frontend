@@ -10,7 +10,7 @@ import {
   SolutionOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Layout, Menu, Typography } from "antd";
+import { Grid, Layout, Menu, Typography } from "antd";
 import { useRouter } from "next/router";
 import { QueryClientProvider, QueryClient } from "react-query";
 import { useAtom } from "jotai";
@@ -20,6 +20,7 @@ const { Header, Sider, Content, Footer } = Layout;
 
 export default function MyApp({ Component, pageProps }) {
   const [auth, setAuth] = useAtom(authentication);
+  const screens = Grid.useBreakpoint();
   const router = useRouter();
   const checkAuth =
     !auth &&
@@ -80,11 +81,13 @@ export default function MyApp({ Component, pageProps }) {
     if (checkAuth) {
       router.push("/thaworn-ap/login");
     }
-  }, []);
 
-  if (checkAuth) {
-    return <div></div>;
-  }
+    if (!screens.lg) {
+      setCollapsed(true);
+    } else {
+      setCollapsed(false);
+    }
+  }, [screens]);
 
   return (
     <>
@@ -95,7 +98,11 @@ export default function MyApp({ Component, pageProps }) {
         </QueryClientProvider>
       ) : (
         <Layout style={{ height: "100%" }}>
-          <Sider trigger={null} collapsible collapsed={collapsed}>
+          <Sider
+            collapsible
+            collapsed={collapsed}
+            onCollapse={(value) => setCollapsed(value)}
+          >
             <Menu
               theme="dark"
               mode="inline"

@@ -23,6 +23,7 @@ export default function loginPage(): React.ReactElement {
       branch_id:result.result.branch_id,
       role_id:result.result.role_id,
       room_number:result.result.room_number,
+      login_id:result.result.login_id
 
       });
       message.success("เข้าสู่ระบบสำเร็จ");
@@ -43,6 +44,7 @@ export default function loginPage(): React.ReactElement {
 
   return (
     <div className="relative w-full h-screen">
+      
       <div className="flex justify-center items-center h-full">
         <div className="max-w-[400px] w-full mx-auto px-8 border-4 shadow-sm rounded-lg">
           <h2 className="text-4xl font-bold text-center py-6">ThawornAp</h2>

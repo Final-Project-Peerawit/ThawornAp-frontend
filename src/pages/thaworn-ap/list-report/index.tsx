@@ -282,8 +282,8 @@ const listReport: React.FC = () => {
 
   useEffect(() => {
     form.setFieldsValue({
-      branch: auth?.role_id === 3 ? undefined : auth.branch_id,
-      roomNumber: checkedRoomNumber ? undefined : auth.room_number,
+      branch: auth?.role_id === 3 ? undefined : auth?.branch_id,
+      roomNumber: checkedRoomNumber ? undefined : auth?.room_number,
     });
   }, []);
 

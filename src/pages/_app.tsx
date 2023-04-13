@@ -59,7 +59,7 @@ export default function MyApp({ Component, pageProps }) {
     },
     {
       key: "5",
-      icon: <UserOutlined />,
+      icon: <TeamOutlined />,
       label: "จัดการเจ้าหน้าที่",
       link: "/thaworn-ap/personnel-management",
     },
@@ -78,6 +78,11 @@ export default function MyApp({ Component, pageProps }) {
     }
     router.push(found.link);
   };
+
+
+  const routeToProfilePage = () => {
+    router.push(`/thaworn-ap/profile/${auth.login_id}`);
+  }
 
   useEffect(() => {
     if (checkAuth) {
@@ -134,9 +139,14 @@ export default function MyApp({ Component, pageProps }) {
                       <div>
                         <BellFilled style={{ fontSize: 25 }} />
                       </div>
-                      <div>
-                        <TeamOutlined style={{ fontSize: 25 }} />
-                      </div>
+                      <a
+                        className="cursor-pointer"
+                        onClick={() => routeToProfilePage()}
+                      >
+                        <UserOutlined
+                          style={{ fontSize: 25 }}
+                        />
+                      </a>
                     </div>
                   </div>
                 </div>

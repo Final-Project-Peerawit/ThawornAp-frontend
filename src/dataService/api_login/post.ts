@@ -12,6 +12,7 @@ export type IcreateLoginDataBody = {
     branch_id: number;
     role_id: number;
     room_number:number
+    login_id:string
   };
 };
 
@@ -32,7 +33,8 @@ export async function createData({
       tokens: result.data.tokens,
       branch_id: result.data.branch_id,
       role_id:result.data.role_id,
-      room_number:result.data.room_number
+      room_number:result.data.room_number,
+      login_id:result.data.login_id
     },
   });
 }

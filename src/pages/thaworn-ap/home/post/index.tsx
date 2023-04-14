@@ -47,7 +47,7 @@ export default function postInfo(): React.ReactElement {
     const normal: ICreateInformation = {
       title: form.getFieldValue("title"),
       description: form.getFieldValue("description"),
-      picture: normalUploadFile[0] ? normalUploadFile.at(0) : null,
+      picture: normalUploadFile[0] ? normalUploadFile[0] : null,
     };
     mutate(normal);
   };

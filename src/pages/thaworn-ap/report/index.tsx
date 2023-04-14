@@ -1,4 +1,4 @@
-import { CameraOutlined, PlusOutlined, SaveOutlined } from "@ant-design/icons";
+import { SaveOutlined } from "@ant-design/icons";
 import {
   Button,
   Card,
@@ -17,7 +17,6 @@ import { RangePickerProps } from "antd/es/date-picker";
 import Modals from "./components/modal";
 import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
-import { UploadProps } from "antd";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { useQuery } from "react-query";
 import { getTypePlace } from "src/dataService/api_@typeReportId_typePlace/get";
@@ -82,14 +81,6 @@ const report: React.FC = () => {
       return e;
     }
     return e && e.fileList;
-  };
-
-  const handleFileChange = ({ fileList }) => {
-    setFileList(fileList);
-  };
-
-  const handleFormFinish = (values) => {
-    console.log(values);
   };
 
   const handleCancel = () => setPreviewOpen(false);

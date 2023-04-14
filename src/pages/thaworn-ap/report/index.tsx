@@ -12,14 +12,15 @@ import {
   Select,
   Upload,
   UploadFile,
+  message,
 } from "antd";
 import { RangePickerProps } from "antd/es/date-picker";
 import Modals from "./components/modal";
 import React, { useEffect, useState } from "react";
+import router from "next/router";
 import dayjs from "dayjs";
-import { UploadProps } from "antd";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { getTypePlace } from "src/dataService/api_@typeReportId_typePlace/get";
 import { getTypeFix } from "src/dataService/api_@placeId_typefix/get";
 import { RcFile } from "antd/lib/upload";
@@ -33,9 +34,11 @@ export type IformInstanceValue = {
   fixId: number;
   uploadFile: UploadFile[] | null;
   description: null | string;
+  repairsDate: Date;
+  allow: boolean;
 };
 
-const report: React.FC = () => {
+const report = (): React.ReactElement => {
   const [form] = Form.useForm<IformInstanceValue>();
 
   const [typePlaceId, setTypePlaceId] = useState<number>(1);
@@ -82,14 +85,6 @@ const report: React.FC = () => {
       return e;
     }
     return e && e.fileList;
-  };
-
-  const handleFileChange = ({ fileList }) => {
-    setFileList(fileList);
-  };
-
-  const handleFormFinish = (values) => {
-    console.log(values);
   };
 
   const handleCancel = () => setPreviewOpen(false);

@@ -1,4 +1,4 @@
-import { Button, message, Modal, Typography } from "antd";
+import { Button, message, Modal, Typography, UploadFile } from "antd";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useMutation } from "react-query";
@@ -21,12 +21,10 @@ function modals({ isOpen, onValueChange, form }: IProp): React.ReactElement {
   const { mutate } = useMutation({
     mutationKey: ["createReport"],
     mutationFn: async (data: IcreateReportData) => {
-      return createReport({ customer_id: "asdfasdf", data: data }); // customer id ต้องเอามาจาก local storage
+      return createReport({ data: data });
     },
     onSuccess: () => {
       message.success("Create Success");
-      onValueChange(false);
-      setIsModalOpen(false);
       router.push("/thaworn-ap/list-report");
     },
     onError: () => {
@@ -41,13 +39,14 @@ function modals({ isOpen, onValueChange, form }: IProp): React.ReactElement {
     });
 
     const normal: IcreateReportData = {
-      type_report_id: form.typeReportId,
-      description: form.description,
-      fix_id: form.fixId,
-      place_id: form.placeId,
-      upload_file: normalUploadFile,
+      typeReportId: form.typeReportId,
+      placeId: form.placeId,
+      fixId: form.fixId,
+      uploadFile: normalUploadFile[0] ? normalUploadFile : null,
+      description: form.description ? form.description : null,
+      repairsDate: new Date(String(form.repairsDate)).toJSON(),
+      allow: form.allow ? true : false,
     };
-
     mutate(normal);
   };
 

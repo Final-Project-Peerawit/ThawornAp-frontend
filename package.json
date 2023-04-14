@@ -19,6 +19,7 @@
     "echarts-for-react": "^3.0.2",
     "esm": "^3.2.25",
     "jotai": "^1.11.1",
+    "lodash-es": "^4.17.21",
     "next": "^10.0.6",
     "next-session": "^4.0.5",
     "postcss": "^8.4.5",

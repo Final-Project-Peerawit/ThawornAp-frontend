@@ -1,4 +1,4 @@
-import { Button, Form, Input, message, PageHeader, Select } from "antd";
+import { Button, Form, Input, message, Modal, PageHeader, Select } from "antd";
 import router from "next/router";
 import React, { useState } from "react";
 import { useMutation, useQuery } from "react-query";
@@ -8,6 +8,7 @@ import {
   IcreateRegisterData,
 } from "src/dataService/api_register/post";
 import Modals from "./components/modals";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 
 export type IformRegisterValue = {
   firstname: string;
@@ -50,14 +51,14 @@ const register = (): React.ReactElement => {
     mutate(normal);
   };
 
-  const modal = (): JSX.Element => {
-    return (
-      <Modals
-        isOpen={isOpen}
-        onValueChange={(value) => setIsOpen(value)}
-        onHandleOk={handleOk}
-      />
-    );
+  const confirm = () => {
+    Modal.confirm({
+      title: "ยืนยันการลงทะเบียนหรือไม่",
+      icon: <ExclamationCircleOutlined />,
+      okText: "ยืนยัน",
+      cancelText: "ยกเลิก",
+      onOk: () => handleOk(),
+    });
   };
 
   const { data: dataBranch, isLoading: isLoadingBranch } = useQuery({
@@ -70,11 +71,10 @@ const register = (): React.ReactElement => {
       <div className="flex justify-center items-center h-full">
         <div className="max-w-[700px] w-full border-4 shadow-sm rounded-lg">
           <PageHeader onBack={() => window.history.back()} title="ลงทะเบียน" />
-          {isOpen ? modal() : null}
           <div className="px-8 pb-8">
             <Form
               form={form}
-              onFinish={() => setIsOpen(!isOpen)}
+              onFinish={() => confirm()}
               layout="vertical"
             >
               <Form.Item

@@ -1,9 +1,9 @@
-import { Button, Form, Input, PageHeader, Select, Skeleton, message } from "antd";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
+import { Button, Form, Input, Modal, PageHeader, Select, Skeleton, message } from "antd";
 import React, { useEffect, useState } from "react"
 import { useMutation, useQuery } from "react-query";
 import { getTypeBranch } from "src/dataService/api_branch/get";
 import { IUserProfileResult, getUserProfile } from "src/dataService/api_user_profile/get";
-import Modal from './components/confirm_modal'
 import { IUpdateUserProfileData, updateUserProfile } from "src/dataService/api_user_profile/put";
 
 export default function profile(): React.ReactElement {
@@ -48,6 +48,16 @@ export default function profile(): React.ReactElement {
         mutate(normal)
     }
 
+    const confirm = () => {
+        Modal.confirm({
+          title: "ยืนยันการแก้ไขข้อมูลส่วนตัว",
+          icon: <ExclamationCircleOutlined />,
+          okText: "ยืนยัน",
+          cancelText: "ยกเลิก",
+          onOk: () => onHandleOk(),
+        });
+      };
+
     useEffect(() => {
         form.setFieldsValue({
             branch_id: getPofileDate?.result[0].branch_id,
@@ -62,7 +72,6 @@ export default function profile(): React.ReactElement {
 
     return (
         <div className="pb-10">
-            <Modal isOpen={open} onHandleOk={() => onHandleOk()} onValueChange={() => setOpen(false)} key={'44'} />
             <PageHeader onBack={() => window.history.back()} title="ข้อมูลผู้ใช้งาน" />
             {
                 isLoadingGetPofileDate ? <Skeleton active /> : <div className="flex flex-initial justify-center">
@@ -70,7 +79,7 @@ export default function profile(): React.ReactElement {
                         <Form
                             layout="vertical"
                             form={form}
-                            onFinish={onFinish}
+                            onFinish={() => confirm()}
                         >
                             <Form.Item
                                 label="ชื่อ"

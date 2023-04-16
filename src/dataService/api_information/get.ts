@@ -11,7 +11,7 @@ export type IGetInformationBody = {
   result: IAddformation[];
 };
 
-export function getInformation(): Promise<IGetInformationBody> {
+export function getInformation(queryId? :number): Promise<IGetInformationBody> {
   const mock: IAddformation[] = [
     {
       id: 1,
@@ -54,5 +54,7 @@ export function getInformation(): Promise<IGetInformationBody> {
       create_dt: "2022-01-15 11:00",
     },
   ];
-  return Promise.resolve({ result: mock });
+
+  
+  return Promise.resolve({ result: queryId ? mock.filter((item) => item.id === queryId) : mock });
 }

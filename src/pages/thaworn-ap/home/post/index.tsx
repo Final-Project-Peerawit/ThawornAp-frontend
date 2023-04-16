@@ -1,3 +1,4 @@
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Modal, PageHeader, Upload, message } from "antd";
 import { RcFile, UploadFile } from "antd/lib/upload";
 import { useRouter } from "next/router";
@@ -6,8 +7,7 @@ import { useMutation } from "react-query";
 import {
   ICreateInformation,
   createInformation,
-} from "src/dataService/api_add_information/post";
-import ModalCreatePost from "./components/confirm_modal";
+} from "src/dataService/api_information/post";
 
 export type IFormInstanceValue = {
   title: string;
@@ -19,9 +19,7 @@ export default function postInfo(): React.ReactElement {
   const [form] = Form.useForm<IFormInstanceValue>();
   const router = useRouter();
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [open, setOpen] = useState<boolean>(false);
   const [previewImage, setPreviewImage] = useState("");
-  const [previewTitle, setPreviewTitle] = useState("");
 
   const { mutate } = useMutation({
     mutationKey: ["createInformation"],
@@ -49,7 +47,20 @@ export default function postInfo(): React.ReactElement {
       description: form.getFieldValue("description"),
       picture: normalUploadFile[0] ? normalUploadFile[0] : null,
     };
+
+    console.log(normal)
     mutate(normal);
+  };
+
+    
+  const confirm = () => {
+    Modal.confirm({
+      title: "ยืนยันการสร้างโพส",
+      icon: <ExclamationCircleOutlined />,
+      okText: "ยืนยัน",
+      cancelText: "ยกเลิก",
+      onOk: () => onFinish(),
+    });
   };
 
   const getBase64 = (file: RcFile): Promise<string> =>
@@ -65,9 +76,6 @@ export default function postInfo(): React.ReactElement {
 
     setPreviewImage(file.url || (file.preview as string));
     setPreviewOpen(true);
-    setPreviewTitle(
-      file.name || file.url!.substring(file.url!.lastIndexOf("/") + 1)
-    );
   };
 
   const normFile = (e) => {
@@ -80,15 +88,8 @@ export default function postInfo(): React.ReactElement {
   return (
     <div className="w-full">
       <PageHeader title="สร้างโพส" onBack={() => history.back()} />
-      <ModalCreatePost
-        isOpen={open}
-        onHandleOk={() => onFinish()}
-        onValueChange={() => setOpen(false)}
-        key={"createPost"}
-      />
       <Modal
         open={previewOpen}
-        title={previewTitle}
         footer={null}
         onCancel={() => setPreviewOpen(false)}
       >
@@ -96,7 +97,7 @@ export default function postInfo(): React.ReactElement {
       </Modal>
       <div className="flex flex-initial justify-center mb-10">
         <div className="w-full max-w-[800px]">
-          <Form layout="vertical" form={form} onFinish={() => setOpen(true)}>
+          <Form layout="vertical" form={form} onFinish={() => confirm()}>
             <Form.Item
               name="title"
               label="หัวข้อ"

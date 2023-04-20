@@ -23,14 +23,13 @@ const { Header, Sider, Content, Footer } = Layout;
 export default function MyApp({ Component, pageProps }) {
   const [auth, setAuth] = useAtom(authentication);
   const screens = Grid.useBreakpoint();
+  const [collapsed, setCollapsed] = useState(false);
+  const [queryClient] = React.useState(() => new QueryClient());
   const router = useRouter();
   const checkAuth =
     !auth &&
     router.pathname !== "/thaworn-ap/login" &&
     router.pathname !== "/thaworn-ap/register";
-
-  const [collapsed, setCollapsed] = useState(false);
-  const [queryClient] = React.useState(() => new QueryClient());
 
   const items = [
     {
@@ -79,10 +78,9 @@ export default function MyApp({ Component, pageProps }) {
     router.push(found.link);
   };
 
-
   const routeToProfilePage = () => {
     router.push(`/thaworn-ap/profile/${auth.login_id}`);
-  }
+  };
 
   useEffect(() => {
     if (checkAuth) {
@@ -106,6 +104,7 @@ export default function MyApp({ Component, pageProps }) {
       ) : (
         <Layout style={{ height: "100%" }}>
           <Sider
+            className="fixed-sider"
             collapsible
             collapsed={collapsed}
             onCollapse={(value) => setCollapsed(value)}
@@ -143,23 +142,30 @@ export default function MyApp({ Component, pageProps }) {
                         className="cursor-pointer"
                         onClick={() => routeToProfilePage()}
                       >
-                        <UserOutlined
-                          style={{ fontSize: 25 }}
-                        />
+                        <UserOutlined style={{ fontSize: 25 }} />
                       </a>
                     </div>
                   </div>
                 </div>
               </div>
             </Header>
-            <Content style={{ height: "100%" }}>
-              <QueryClientProvider client={queryClient}>
-                <div className="p-10 min-h-screen">
-                  <div className="rounded-lg bg-white shadow-lg">
-                    <Component {...pageProps} />
+            <Content
+              style={{
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                marginLeft: collapsed ? "80px" : "200px",
+              }}
+            >
+              <div style={{ flex: "1", padding: "0 20px" }}>
+                <QueryClientProvider client={queryClient}>
+                  <div className="p-10 min-h-screen">
+                    <div className="rounded-lg bg-white shadow-lg">
+                      <Component {...pageProps} />
+                    </div>
                   </div>
-                </div>
-              </QueryClientProvider>
+                </QueryClientProvider>
+              </div>
             </Content>
             <Footer style={{ textAlign: "center", background: "white" }}>
               Ant Design ©2023 Created by Ant UED

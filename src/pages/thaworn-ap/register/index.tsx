@@ -68,8 +68,8 @@ const register = (): React.ReactElement => {
 
   return (
     <div className="h-screen w-full bg-gradient-to-br from-blue-400 to-gray-400">
-      <div className="flex justify-center items-center h-full">
-        <div className="max-w-[700px] w-full shadow-lg bg-white rounded-lg">
+      <div className="container max-w-[700px] mx-auto pt-24 ">
+        <div className="w-full shadow-lg bg-white rounded-xl">
           <PageHeader onBack={() => window.history.back()} title="ลงทะเบียน" />
           <div className="px-8 pb-8">
             <Form form={form} onFinish={() => confirm()} layout="vertical">

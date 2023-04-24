@@ -76,8 +76,8 @@ const listReport: React.FC = () => {
       branch_id: values.branch,
       room_number: values.roomNumber,
       state_id: values.step,
-      start_dt: values.date ? String(new Date(values.date[0])) : undefined,
-      end_dt: values.date ? String(new Date(values.date[1])) : undefined,
+      start_dt: values.date ? new Date(values.date[0]).toJSON() : undefined,
+      end_dt: values.date ? new Date(values.date[1]).toJSON() : undefined,
     };
 
     setFilterListReport(normalResult);
@@ -281,6 +281,10 @@ const listReport: React.FC = () => {
     form.setFieldsValue({
       branch: auth?.role_id === 3 ? undefined : auth?.branch_id,
       roomNumber: checkedRoomNumber ? undefined : auth?.room_number,
+    });
+    setFilterListReport({
+      branch_id: auth?.branch_id,
+      room_number: auth?.room_number,
     });
   }, []);
 

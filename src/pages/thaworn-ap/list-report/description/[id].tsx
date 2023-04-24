@@ -1,6 +1,7 @@
 import {
   CheckCircleOutlined,
   EditOutlined,
+  ExclamationCircleOutlined,
   HourglassOutlined,
   SaveOutlined,
   ScheduleOutlined,
@@ -13,6 +14,7 @@ import {
   Card,
   Form,
   Input,
+  Modal,
   PageHeader,
   Skeleton,
   Steps,
@@ -23,6 +25,7 @@ import Router from "next/router";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { getListReportDataDescription } from "src/dataService/api_@listReportId_description/get";
+import SelectTime from "../components/select_time";
 
 type ITypeMockData = {
   branch_name: string;
@@ -40,6 +43,7 @@ type ITypeMockData = {
 export default function component(): React.ReactElement {
   const router = useRouter();
   const [edit, setEdit] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["datamock"],
@@ -52,6 +56,11 @@ export default function component(): React.ReactElement {
         onBack={() => Router.back()}
         title="รายละเอียดการแจ้งซ่อม"
         subTitle={`เลขแจ้งซ่อม ${router.query.id}`}
+      />
+      <SelectTime
+        isOpen={isModalOpen}
+        onHandleOk={() => console.log()}
+        onValueChange={(item) => setIsModalOpen(item)}
       />
       {isLoading ? (
         <Skeleton active />
@@ -190,6 +199,17 @@ export default function component(): React.ReactElement {
                           scope="row"
                           className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
                         >
+                          รูปภาพ
+                        </th>
+                        <td className="px-6 py-4">
+                          {data?.result.description}
+                        </td>
+                      </tr>
+                      <tr className="border-b border-gray-200 dark:border-gray-700">
+                        <th
+                          scope="row"
+                          className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
+                        >
                           เบอร์ติดต่อ
                         </th>
                         <td className="px-6 py-4">
@@ -212,7 +232,17 @@ export default function component(): React.ReactElement {
                         >
                           เวลาที่ต้องการซ่อม
                         </th>
-                        <td className="px-6 py-4">{data?.result.time_fix}</td>
+                        <td className="flex px-6 py-4 items-center space-x-6">
+                          <div>{data?.result.time_fix}</div>
+                          <Button
+                            type="primary"
+                            ghost
+                            className="rounded-md"
+                            onClick={() => setIsModalOpen(true)}
+                          >
+                            เลือกเวลา
+                          </Button>
+                        </td>
                       </tr>
                       <tr className="border-b border-gray-200 dark:border-gray-700">
                         <th

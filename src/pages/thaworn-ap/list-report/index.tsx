@@ -27,6 +27,7 @@ import Modals from "./components/modal";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import {
+  IListReportData,
   IQueryListReport,
   getListReportData,
 } from "src/dataService/api_list_report/get";
@@ -40,20 +41,6 @@ type IformInstanceValue = {
   date: Date[];
   roomNumber: number;
   step: number;
-};
-
-export type IData = {
-  key: number;
-  id: number;
-  createDate: string;
-  room_id: number;
-  branch: number;
-  room: string;
-  palce: string;
-  fix: string;
-  problem: string;
-  status: number;
-  description: string;
 };
 
 const listReport: React.FC = () => {
@@ -108,29 +95,18 @@ const listReport: React.FC = () => {
     }
   };
 
-  const columns: ColumnsType<IData> = [
+  const columns: ColumnsType<IListReportData> = [
     {
       align: "center" as const,
-      width: "7%",
+      width: "10%",
       title: () => {
         return <Typography.Text strong> รหัสการแจ้ง </Typography.Text>;
       },
-      render: (id: number) => {
-        return <Typography.Text strong>{id}</Typography.Text>;
+      render: (report_id: number) => {
+        return <Typography.Text strong>{report_id}</Typography.Text>;
       },
-      dataIndex: "id",
-      key: "id",
-    },
-    {
-      align: "center" as const,
-      title: () => {
-        return <Typography.Text strong> เลขห้อง </Typography.Text>;
-      },
-      render: (room_id: number) => {
-        return <Typography.Text strong>{room_id}</Typography.Text>;
-      },
-      dataIndex: "room_id",
-      key: "room_id",
+      dataIndex: "report_id",
+      key: "report_id",
     },
     {
       width: "15%",
@@ -138,15 +114,21 @@ const listReport: React.FC = () => {
       title: () => {
         return <Typography.Text strong> วันที่/เวลา </Typography.Text>;
       },
-      dataIndex: "createDate",
-      key: "createDate",
+      dataIndex: "create_dt",
+      key: "create_dt",
       render: (date: string) => {
         return (
           <>
             {date ? (
               <>
-                <div>{date.split(" ")[0]}</div>
-                <div>เวลา {date.split(" ")[1]}</div>
+                <div>
+                  {new Date(date.split(" ")[0]).toLocaleDateString("th-TH")}
+                </div>
+
+                <div>
+                  เวลา{" "}
+                  {new Date(date.split(" ")[0]).toLocaleTimeString("th-TH")}
+                </div>
               </>
             ) : null}
           </>
@@ -155,47 +137,62 @@ const listReport: React.FC = () => {
     },
     {
       align: "center" as const,
+      width: "10%",
+      title: () => {
+        return <Typography.Text strong> สาขา </Typography.Text>;
+      },
+      render: (branch_name: string) => {
+        return <Typography.Text strong>{branch_name}</Typography.Text>;
+      },
+      dataIndex: "branch_name",
+      key: "branch_name",
+    },
+    {
+      align: "center" as const,
+      title: () => {
+        return <Typography.Text strong> เลขห้อง </Typography.Text>;
+      },
+      render: (room_number: number) => {
+        return <Typography.Text strong>{room_number}</Typography.Text>;
+      },
+      dataIndex: "room_number",
+      key: "room_number",
+    },
+    {
+      align: "center" as const,
       title: () => {
         return <Typography.Text strong> ประเภทการแจ้ง </Typography.Text>;
       },
-      dataIndex: "room",
-      key: "room",
+      dataIndex: "type_name",
+      key: "type_name",
     },
     {
       align: "center" as const,
       title: () => {
         return <Typography.Text strong> สถานที่ </Typography.Text>;
       },
-      dataIndex: "palce",
-      key: "palce",
+      dataIndex: "place_name",
+      key: "place_name",
     },
     {
       align: "center" as const,
       title: () => {
         return <Typography.Text strong> สิ่งที่ต้องการซ่อม </Typography.Text>;
       },
-      dataIndex: "fix",
-      key: "fix",
-    },
-    {
-      align: "center" as const,
-      title: () => {
-        return <Typography.Text strong> ปัญหา </Typography.Text>;
-      },
-      dataIndex: "problem",
-      key: "problem",
+      dataIndex: "repair_name",
+      key: "repair_name",
     },
     {
       width: "10%",
       title: () => {
         return <Typography.Text strong> สถานะ </Typography.Text>;
       },
-      dataIndex: "status",
-      key: "status",
+      dataIndex: "state_id",
+      key: "state_id",
       align: "center" as const,
-      render: (status: number) => {
-        switch (status) {
-          case 0:
+      render: (state_id: number) => {
+        switch (state_id) {
+          case 1:
             return (
               <Tag
                 icon={<HourglassOutlined style={{ marginBottom: 5 }} />}
@@ -204,7 +201,7 @@ const listReport: React.FC = () => {
                 รอรับเรื่อง
               </Tag>
             );
-          case 1:
+          case 2:
             return (
               <Tag
                 icon={<CheckCircleOutlined style={{ marginBottom: 5 }} />}
@@ -213,7 +210,7 @@ const listReport: React.FC = () => {
                 ยืนยันการรับเรื่อง
               </Tag>
             );
-          case 2:
+          case 3:
             return (
               <Tag
                 icon={<TableOutlined style={{ marginBottom: 5 }} />}
@@ -222,7 +219,7 @@ const listReport: React.FC = () => {
                 ยืนยันวัน-เวลา
               </Tag>
             );
-          case 3:
+          case 4:
             return (
               <Tag
                 icon={<SyncOutlined style={{ marginBottom: 5 }} />}
@@ -231,7 +228,7 @@ const listReport: React.FC = () => {
                 กำลังดำเนินการ
               </Tag>
             );
-          case 4:
+          case 5:
             return (
               <Tag
                 icon={<ScheduleOutlined style={{ marginBottom: 5 }} />}
@@ -240,7 +237,7 @@ const listReport: React.FC = () => {
                 ตรวจสอบหลังดำเนินการ
               </Tag>
             );
-          case 5:
+          case 6:
             return (
               <Tag
                 icon={<SmileOutlined style={{ marginBottom: 5 }} />}
@@ -260,8 +257,8 @@ const listReport: React.FC = () => {
       title: () => {
         return <Typography.Text strong> รายละเอียด </Typography.Text>;
       },
-      dataIndex: "id",
-      key: "description",
+      dataIndex: "report_id",
+      key: "report_id",
       render: (id: number) => (
         <a onClick={() => history.push(`list-report/description/${id}`)}>
           <FileTextOutlined style={{ color: "#3398E8" }} />
@@ -273,8 +270,8 @@ const listReport: React.FC = () => {
       title: () => {
         return <Typography.Text strong> ลบ </Typography.Text>;
       },
-      key: "id",
-      render: (item: IData) => {
+      key: "report_id",
+      render: (item: IListReportData) => {
         return <Modals item={item} />;
       },
     },

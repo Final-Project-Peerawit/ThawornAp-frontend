@@ -12,11 +12,13 @@ import {
   TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Grid, Layout, Menu, Typography } from "antd";
+import { Grid, Layout, Menu, Spin, Typography } from "antd";
 import { useRouter } from "next/router";
-import { QueryClientProvider, QueryClient } from "react-query";
+import { QueryClientProvider, QueryClient, useQuery } from "react-query";
 import { useAtom } from "jotai";
 import { authentication } from "src/hook/persistanceData";
+import { getMenuList } from "src/dataService/api_menu/get";
+import useMyApp from "./hook";
 
 const { Header, Sider, Content, Footer } = Layout;
 
@@ -26,53 +28,55 @@ export default function MyApp({ Component, pageProps }) {
   const [collapsed, setCollapsed] = useState(false);
   const [queryClient] = React.useState(() => new QueryClient());
   const router = useRouter();
-  const checkAuth =
-    !auth &&
-    router.pathname !== "/thaworn-ap/login" &&
-    router.pathname !== "/thaworn-ap/register";
 
-  const items = [
+  const menu = [
     {
-      key: "1",
+      key: 1,
       icon: <HomeOutlined />,
       label: "หน้าแรก",
       link: "/thaworn-ap/home",
     },
     {
-      key: "2",
+      key: 2,
       icon: <FileAddOutlined />,
       label: "แจ้งปัญหา",
       link: "/thaworn-ap/report",
     },
     {
-      key: "3",
+      key: 3,
       icon: <SolutionOutlined />,
       label: "รายการแจ้งซ่อม",
       link: "/thaworn-ap/list-report",
     },
     {
-      key: "4",
+      key: 4,
       icon: <FundOutlined />,
       label: "จัดการสาขา",
       link: "/thaworn-ap/branch-management",
     },
     {
-      key: "5",
+      key: 5,
       icon: <TeamOutlined />,
       label: "จัดการเจ้าหน้าที่",
       link: "/thaworn-ap/personnel-management",
     },
     {
-      key: "6",
+      key: 6,
       icon: <ExportOutlined />,
       label: "ออกจากระบบ",
       link: "/thaworn-ap/login",
     },
   ];
 
-  const routerPage = (key: string): void => {
-    const found = items.find((item) => item.key === key);
-    if (key === "6") {
+  const checkAuth =
+    !auth &&
+    router.pathname !== "/thaworn-ap/login" &&
+    router.pathname !== "/thaworn-ap/register";
+
+  // const { menu } = useMyApp();
+  const routerPage = (key: number): void => {
+    const found = menu.find((item) => item.key === key);
+    if (key === 6) {
       setAuth(undefined);
     }
     router.push(found.link);
@@ -113,8 +117,8 @@ export default function MyApp({ Component, pageProps }) {
               theme="dark"
               mode="inline"
               defaultSelectedKeys={["1"]}
-              onClick={(value) => routerPage(value.key)}
-              items={items.map((item) => ({
+              onClick={(value) => routerPage(Number(value.key))}
+              items={menu.map((item) => ({
                 key: item.key,
                 icon: item.icon,
                 label: item.label,

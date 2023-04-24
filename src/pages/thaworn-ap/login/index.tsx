@@ -19,12 +19,11 @@ export default function loginPage(): React.ReactElement {
     },
     onSuccess: (result) => {
       setAuth({
-      token:result.result.tokens,
-      branch_id:result.result.branch_id,
-      role_id:result.result.role_id,
-      room_number:result.result.room_number,
-      login_id:result.result.login_id
-
+        token: result.result.tokens,
+        branch_id: result.result.branch_id,
+        role_id: result.result.role_id,
+        room_number: result.result.room_number,
+        login_id: result.result.login_id,
       });
       message.success("เข้าสู่ระบบสำเร็จ");
       router.push("/thaworn-ap/home");
@@ -43,10 +42,9 @@ export default function loginPage(): React.ReactElement {
   };
 
   return (
-    <div className="relative w-full h-screen">
-      
+    <div className="relative w-full h-screen bg-gradient-to-br from-blue-400 to-gray-400">
       <div className="flex justify-center items-center h-full">
-        <div className="max-w-[400px] w-full mx-auto px-8 border-4 shadow-sm rounded-lg">
+        <div className="max-w-[400px] w-full mx-auto px-8 shadow-lg rounded-lg bg-white">
           <h2 className="text-4xl font-bold text-center py-6">ThawornAp</h2>
           <Form
             name="normal_login"
@@ -87,10 +85,12 @@ export default function loginPage(): React.ReactElement {
             </Form.Item>
 
             <Form.Item>
-              <div className="flex justify-center w-full py-2">
+              <div className="flex justify-center w-full pb-2">
                 <Button
                   type="primary"
+                  ghost
                   htmlType="submit"
+                  shape="round"
                   className="login-form-button w-full"
                   loading={isLoading}
                   disabled={isLoading}

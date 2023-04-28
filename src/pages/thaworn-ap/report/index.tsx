@@ -232,7 +232,7 @@ const report = (): React.ReactElement => {
                     }
                   >
                     {({ getFieldValue }) => {
-                      return (
+                      return getFieldValue("typeReportId") === 1 ? (
                         <Form.Item name="fixId" label="สิ่งที่ต้องการซ่อม">
                           <Select
                             className="w-full"
@@ -250,7 +250,7 @@ const report = (): React.ReactElement => {
                             }
                           />
                         </Form.Item>
-                      );
+                      ) : null;
                     }}
                   </Form.Item>
                 </div>

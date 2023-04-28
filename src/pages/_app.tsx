@@ -12,13 +12,12 @@ import {
   TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Grid, Layout, Menu, Spin, Typography } from "antd";
+import { Grid, Layout, Menu, Typography } from "antd";
 import { useRouter } from "next/router";
-import { QueryClientProvider, QueryClient, useQuery } from "react-query";
+import { QueryClientProvider, QueryClient } from "react-query";
 import { useAtom } from "jotai";
 import { authentication } from "src/hook/persistanceData";
-import { getMenuList } from "src/dataService/api_menu/get";
-import useMyApp from "./hook";
+import Head from "next/head";
 
 const { Header, Sider, Content, Footer } = Layout;
 
@@ -100,6 +99,30 @@ export default function MyApp({ Component, pageProps }) {
 
   return (
     <>
+      <head>
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/apple-touch-icon.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/favicon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/favicon-16x16.png"
+        />
+        <link rel="manifest" href="/site.webmanifest" />
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
+        <meta name="msapplication-TileColor" content="#da532c" />
+        <meta name="theme-color" content="#ffffff" />
+      </head>
+
       {router.pathname === "/thaworn-ap/register" ||
       router.pathname === "/thaworn-ap/login" ? (
         <QueryClientProvider client={queryClient}>

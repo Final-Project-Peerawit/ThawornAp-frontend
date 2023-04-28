@@ -323,8 +323,8 @@ const listReport: React.FC = () => {
                   placeholder="เลือกสถานะ"
                   allowClear
                   options={dataStep?.result.map((item) => ({
-                    label: item.step_name,
-                    value: item.step_id,
+                    label: item.state_name,
+                    value: item.state_id,
                   }))}
                   loading={isLoadingStep}
                   disabled={isLoadingStep}

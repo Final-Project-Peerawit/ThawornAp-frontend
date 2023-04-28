@@ -30,5 +30,5 @@ export async function createRegisterData({
     email: data.email,
     phone_number: data.phone,
   });
-  return Promise.resolve({ result: true });
+  return Promise.resolve({ result: result.data.result });
 }

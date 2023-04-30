@@ -25,19 +25,22 @@ import { getListReportData } from "src/dataService/api_list_report/get";
 import FormManageState from "../components/form_manage_state";
 import { useAtom } from "jotai";
 import { authentication } from "src/hook/persistanceData";
+import TYPE_ROLE from "@/components/enums/type_roleid";
 
 export default function component(): React.ReactElement {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [auth] = useAtom(authentication);
 
-  const { data: listReportDate, isLoading: isLoadingListReportDate } = useQuery(
-    {
-      queryKey: ["report_list", router.query.id],
-      queryFn: async () =>
-        getListReportData({ report_id: router.query.id as string }),
-    }
-  );
+  const {
+    data: listReportDate,
+    isLoading: isLoadingListReportDate,
+    refetch,
+  } = useQuery({
+    queryKey: ["report_list", router.query.id],
+    queryFn: async () =>
+      getListReportData({ report_id: router.query.id as string }),
+  });
 
   return (
     <div className="pt-5">
@@ -57,7 +60,7 @@ export default function component(): React.ReactElement {
         <div className="pb-10">
           <div className="pb-10 px-10">
             <Steps
-              current={listReportDate?.result[0].state_id}
+              current={listReportDate?.result[0].state_id - 1}
               items={[
                 {
                   title: "รอรับเรื่อง",
@@ -83,18 +86,30 @@ export default function component(): React.ReactElement {
             />
           </div>
 
-          {auth?.role_id === 1 ? (
+          {auth?.role_id === TYPE_ROLE.USER &&
+          listReportDate?.result[0].is_time_not_match ? (
             <div className="px-20 pb-10">
               <Alert
                 message="แจ้งเตือน"
-                description="เนื่องจากวันและเวลาที่ท่านเลือกมาก่อนหน้า ช่างไม่สามารถมาซ่อมในช่วงเวลาดังกล่าวได้ โปรดเลือกวันและเวลาด้านล่างหรือแจ้งเวลาที่ต้องการให้ช่างเข้ามาซ่อมใหม่ด้านล่าง"
+                description={listReportDate?.result[0].description_notify}
                 type="warning"
                 showIcon
+                action={
+                  <Button
+                    type="primary"
+                    className="rounded-md"
+                    onClick={() => setIsModalOpen(true)}
+                  >
+                    เลือกเวลา
+                  </Button>
+                }
               />
             </div>
           ) : null}
 
-          {auth?.role_id === 2 || auth?.role_id === 3 ? (
+          {auth?.role_id === TYPE_ROLE.ADMIN ||
+          (auth?.role_id === TYPE_ROLE.SUPER_ADMIN &&
+            listReportDate.result[0].is_new_time) ? (
             <div className="px-20 pb-10">
               <Alert
                 message="แจ้งเตือน"
@@ -272,14 +287,6 @@ export default function component(): React.ReactElement {
                               listReportDate?.result[0].report_dt
                             ).toLocaleTimeString("th-TH")}
                           </div>
-                          <Button
-                            type="primary"
-                            ghost
-                            className="rounded-md"
-                            onClick={() => setIsModalOpen(true)}
-                          >
-                            เลือกเวลา
-                          </Button>
                         </td>
                       </tr>
                     </tbody>
@@ -289,7 +296,11 @@ export default function component(): React.ReactElement {
             </div>
           </div>
 
-          <FormManageState />
+          <FormManageState
+            listReportDate={listReportDate}
+            reportId={String(router.query.id)}
+            refetch={() => refetch()}
+          />
         </div>
       )}
     </div>

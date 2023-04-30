@@ -1,22 +1,42 @@
 import { DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { Button, message, Modal, Typography } from "antd";
 import React, { useState } from "react";
-import { IData } from "../..";
+import { useMutation } from "react-query";
+import { IListReportData } from "src/dataService/api_list_report/get";
+import {
+  IDeleteListReport,
+  deleteListReport,
+} from "src/dataService/api_list_report/put";
 
 interface IProp {
-  item: IData;
+  item: IListReportData;
+  refresh: () => void;
 }
 
-function modals({ item }: IProp): React.ReactElement {
+function modals({ item, refresh }: IProp): React.ReactElement {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const showModal = (): void => {
     setIsModalOpen(true);
   };
 
+  const { mutate } = useMutation({
+    mutationKey: ["createRegister"],
+    mutationFn: async (data: IDeleteListReport) => {
+      return deleteListReport({ report_id: data.report_id });
+    },
+    onSuccess: () => {
+      message.success(`ลบรหัสการแจ้ง ${item?.report_id} สำเร็จ`);
+      setIsModalOpen(false);
+      refresh();
+    },
+    onError: () => {
+      message.error("ลบไม่สำเร็จ");
+    },
+  });
+
   const handleOk = (): void => {
-    setIsModalOpen(false);
-    message.success("createSuccess");
+    mutate({ report_id: item?.report_id });
   };
 
   const handleCancel = (): void => {
@@ -36,8 +56,9 @@ function modals({ item }: IProp): React.ReactElement {
           <Typography.Title level={1} style={{ color: "#faad14" }}>
             <ExclamationCircleOutlined />
           </Typography.Title>
-          <Typography.Title level={3}>
-            คุณต้องการที่จะลบรหัสการแจ้ง {item?.id} ?
+          <Typography.Title level={3}>คุณต้องการที่จะลบ</Typography.Title>
+          <Typography.Title level={5}>
+            รหัสการแจ้ง {item?.report_id} ?
           </Typography.Title>
         </div>
 

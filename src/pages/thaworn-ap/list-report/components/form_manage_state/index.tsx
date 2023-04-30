@@ -1,154 +1,381 @@
-import { EditOutlined, SaveOutlined } from "@ant-design/icons";
-import { Button, Card, Form, Input, Typography } from "antd";
+import {
+  EditOutlined,
+  ExclamationCircleFilled,
+  SaveOutlined,
+} from "@ant-design/icons";
+import { Alert, Button, Card, Form, Modal, Typography, message } from "antd";
 import { useAtom } from "jotai";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { authentication } from "src/hook/persistanceData";
-import SelectTimeAdmin from "../select_time_admin";
+import SelectTimeAdmin, { IformDate } from "../select_time_admin";
+import TYPE_ROLE from "@/components/enums/type_roleid";
+import { InputNumber } from "antd";
+import { IListReportBody } from "src/dataService/api_list_report/get";
+import { useMutation } from "react-query";
+import {
+  changeStateBody,
+  changeStateParams,
+  updateChangeState,
+} from "src/dataService/api_listReport_@reportId_changeState/put";
+import {
+  createTimeSlot,
+  createTimeSlotBody,
+  createTimeSlotParams,
+} from "src/dataService/api_listReport_@reportId_timeSlot/post";
 
-export default function formManageState(): React.ReactElement {
+interface IProps {
+  listReportDate: IListReportBody | undefined;
+  reportId: string;
+  refetch: () => void;
+}
+
+export default function formManageState({
+  listReportDate,
+  reportId,
+  refetch,
+}: IProps): React.ReactElement {
   const [edit, setEdit] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [description, setDescription] = useState<string>();
   const [auth] = useAtom(authentication);
 
-  if (auth?.role_id === 1) {
+  const { mutate: mutateUpdateChangeState } = useMutation({
+    mutationKey: ["updateChangeState"],
+    mutationFn: async (data: {
+      params: changeStateParams;
+      body: changeStateBody;
+    }) => {
+      return updateChangeState(data.params, data.body);
+    },
+    onSuccess: () => {
+      message.success("อัพเดตสำเร็จ");
+      refetch();
+    },
+    onError: () => {
+      message.error("อัพเดตไม่สำเร็จ");
+    },
+  });
+
+  const { mutate: mutateCreateTimeSlot } = useMutation({
+    mutationKey: ["createTimeSlot"],
+    mutationFn: async (data: {
+      params: createTimeSlotParams;
+      body?: createTimeSlotBody;
+    }) => {
+      return createTimeSlot(data.params, data.body);
+    },
+    onSuccess: () => {
+      message.success("สร้างสำเร็จ");
+      mutateUpdateChangeState({
+        params: { report_id: reportId },
+        body: {
+          description_notify: description.trim(),
+          is_time_not_match: 1,
+        },
+      });
+      refetch();
+    },
+    onError: () => {
+      message.error("สร้างม่สำเร็จ");
+    },
+  });
+
+  const handleCreateTimeSlot = (data: IformDate): void => {
+    setDescription(data.descriptionNotify);
+    mutateCreateTimeSlot({
+      params: { report_id: reportId },
+      body: {
+        time_slot1: String(new Date(data.timeSlot1).toJSON()),
+        time_slot2: String(new Date(data.timeSlot2).toJSON()),
+        time_slot3: String(new Date(data.timeSlot3).toJSON()),
+        time_slot4: String(new Date(data.timeSlot4).toJSON()),
+      },
+    });
+  };
+
+  const confirmReport = (): void => {
+    Modal.confirm({
+      title: "ยืนยันการรับเรื่อง",
+      icon: <ExclamationCircleFilled />,
+      okText: "ยันยัน",
+      cancelText: "ยกเลิก",
+      onOk() {
+        mutateUpdateChangeState({
+          params: { report_id: reportId },
+          body: { state_id: 2 },
+        });
+      },
+    });
+  };
+
+  const confirmTime = (): void => {
+    Modal.confirm({
+      title:
+        "ยืนยันวัน - เวลา " +
+        new Date(reportData.report_dt).toLocaleString("th-TH"),
+      icon: <ExclamationCircleFilled />,
+      okText: "ยันยัน",
+      cancelText: "ยกเลิก",
+      onOk() {
+        mutateUpdateChangeState({
+          params: { report_id: reportId },
+          body: { state_id: 3 },
+        });
+      },
+    });
+  };
+
+  const confirmContinue = (): void => {
+    Modal.confirm({
+      title: "ยืนยันการดำเนินการ",
+      icon: <ExclamationCircleFilled />,
+      okText: "ยันยัน",
+      cancelText: "ยกเลิก",
+      onOk() {
+        mutateUpdateChangeState({
+          params: { report_id: reportId },
+          body: { state_id: 4 },
+        });
+      },
+    });
+  };
+
+  const confirmSuccess = (): void => {
+    Modal.confirm({
+      title: "ยืนยันเสร็จสิ้น",
+      icon: <ExclamationCircleFilled />,
+      okText: "ยันยัน",
+      cancelText: "ยกเลิก",
+      onOk() {
+        mutateUpdateChangeState({
+          params: { report_id: reportId },
+          body: { state_id: 5 },
+        });
+      },
+    });
+  };
+
+  if (auth?.role_id === TYPE_ROLE.USER) {
     return null;
   }
 
+  const reportData = useMemo(() => {
+    return listReportDate.result[0];
+  }, [listReportDate]);
+
   return (
     <div>
+      <SelectTimeAdmin
+        isOpen={isModalOpen}
+        onHandleOk={handleCreateTimeSlot}
+        onValueChange={(item) => setIsModalOpen(item)}
+      />
       <div className="px-10">
-        <div className="flex justify-between">
-          <SelectTimeAdmin
-            isOpen={isModalOpen}
-            onHandleOk={() => console.log()}
-            onValueChange={(item) => setIsModalOpen(item)}
-          />
-          <Typography.Title level={4}> ข้อมูลการดำเนินการ </Typography.Title>
-          {!edit ? (
-            <Button
-              type="primary"
-              ghost
-              icon={<EditOutlined />}
-              onClick={() => setEdit(!edit)}
-            >
-              แก้ไขข้อมูล
-            </Button>
-          ) : (
-            <Button
-              type="primary"
-              icon={<SaveOutlined />}
-              onClick={() => setEdit(!edit)}
-            >
-              บันทึก
-            </Button>
-          )}
-        </div>
+        <Typography.Title level={4}> ข้อมูลการดำเนินการ </Typography.Title>
+        <Card
+          style={{
+            borderColor: "#B2B2B2",
+            borderRadius: 5,
+          }}
+          bodyStyle={{ padding: 0 }}
+        >
+          <div className="relative overflow-x-auto sm:rounded-lg">
+            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+              <tbody>
+                <tr className="border-b border-gray-200 dark:border-gray-700">
+                  <th
+                    scope="row"
+                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
+                  >
+                    รับเรื่อง
+                  </th>
+                  <td className="px-6 py-4">
+                    <Button
+                      type="primary"
+                      ghost
+                      className="rounded-md"
+                      onClick={confirmReport}
+                      disabled={reportData.state_id > 1}
+                    >
+                      ยืนยันคำร้อง
+                    </Button>
+                  </td>
+                </tr>
+                {reportData.state_id - 1 >= 1 && (
+                  <tr className="border-b border-gray-200 dark:border-gray-700">
+                    <th
+                      scope="row"
+                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
+                    >
+                      วัน - เวลา
+                    </th>
+                    <td className="px-6 py-4 ">
+                      <Alert
+                        className="mb-5"
+                        message={`ยันยันเวลา ${new Date(
+                          reportData.report_dt
+                        ).toLocaleString("th-TH")}`}
+                        banner
+                        type="success"
+                        action={
+                          <Button
+                            type="primary"
+                            className="rounded-md"
+                            disabled={
+                              reportData.is_time_not_match ||
+                              reportData.state_id > 2
+                            }
+                            onClick={confirmTime}
+                          >
+                            ยืนยันการรับเรื่อง
+                          </Button>
+                        }
+                      />
+                      <Alert
+                        message={`เวลา [${new Date(
+                          reportData.report_dt
+                        ).toLocaleString(
+                          "th-TH"
+                        )}] ที่ผู้ใช้เลือก ไม่สามารถนัดช่วงได้ เพื่มวัน-เวลา ให้ผู้ใช้เลือก`}
+                        banner
+                        type="warning"
+                        action={
+                          <Button
+                            type="primary"
+                            className="rounded-md"
+                            onClick={() => setIsModalOpen(true)}
+                            disabled={
+                              reportData.is_time_not_match ||
+                              reportData.state_id > 2
+                            }
+                          >
+                            เพิ่มวัน-เวลา
+                          </Button>
+                        }
+                      />
+                    </td>
+                  </tr>
+                )}
+                {reportData.state_id - 1 >= 2 && (
+                  <tr className="border-b border-gray-200 dark:border-gray-700">
+                    <th
+                      scope="row"
+                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
+                    >
+                      ดำเนินการ
+                    </th>
+                    <td className="px-6 py-4">
+                      <Button
+                        type="primary"
+                        ghost
+                        className="rounded-md"
+                        onClick={confirmContinue}
+                        disabled={reportData.state_id > 3}
+                      >
+                        ยืนยันดำเนินการ
+                      </Button>
+                    </td>
+                  </tr>
+                )}
+                {reportData.state_id - 1 >= 3 && (
+                  <tr className="border-b border-gray-200 dark:border-gray-700">
+                    <th
+                      scope="row"
+                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
+                    >
+                      เสร็จสิ้น
+                    </th>
+                    <td className="px-6 py-4">
+                      <Button
+                        type="primary"
+                        className="rounded-md"
+                        onClick={confirmSuccess}
+                        disabled={reportData.state_id > 4}
+                      >
+                        ยืนยันเสร็จสิ้น
+                      </Button>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </Card>
       </div>
+      {reportData.state_id === 5 && (
+        <>
+          <div className="w-full pt-10 px-10">
+            <div className="flex justify-between">
+              <Typography.Title level={4}> ค่าใช้จ่าย </Typography.Title>
 
-      <Form>
-        <div className="px-10">
-          <Card
-            style={{
-              borderColor: "#B2B2B2",
-              borderRadius: 5,
-            }}
-            bodyStyle={{ padding: 0 }}
-          >
-            <div className="relative overflow-x-auto sm:rounded-lg">
-              <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                <tbody>
-                  <tr className="border-b border-gray-200 dark:border-gray-700">
-                    <th
-                      scope="row"
-                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
-                    >
-                      ยืนยันการรับเรื่อง
-                    </th>
-                    <td className="px-6 py-4">
-                      <Button
-                        type="primary"
-                        ghost
-                        className="rounded-md"
-                        disabled={!edit}
-                      >
-                        ยืนยันคำร้อง
-                      </Button>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-gray-200 dark:border-gray-700">
-                    <th
-                      scope="row"
-                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
-                    >
-                      ยืนยันวัน - เวลา
-                    </th>
-                    <td className="px-6 py-4 space-x-5">
-                      <Button
-                        type="primary"
-                        ghost
-                        className="rounded-md"
-                        disabled={!edit}
-                      >
-                        ยืนยันวัน - เวลา
-                      </Button>
-                      <Button
-                        type="primary"
-                        ghost
-                        className="rounded-md"
-                        disabled={!edit}
-                        onClick={() => setIsModalOpen(true)}
-                      >
-                        เลือกเวลา
-                      </Button>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-gray-200 dark:border-gray-700">
-                    <th
-                      scope="row"
-                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
-                    >
-                      ยืนยันผลการซ่อม
-                    </th>
-                    <td className="px-6 py-4">
-                      <Button
-                        type="primary"
-                        ghost
-                        className="rounded-md"
-                        disabled={!edit}
-                      >
-                        ยืนยันผลการดำเนินการ
-                      </Button>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-gray-200 dark:border-gray-700">
-                    <th
-                      scope="row"
-                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
-                    >
-                      ค่าอุปกรณ์
-                    </th>
-                    <td className="px-6 py-4">
-                      <Input type="text" disabled={!edit} />
-                    </td>
-                  </tr>
-                  <tr className="border-b border-gray-200 dark:border-gray-700">
-                    <th
-                      scope="row"
-                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
-                    >
-                      ค่าแรงช่าง
-                    </th>
-                    <td className="px-6 py-4">
-                      <Input type="text" disabled={!edit} />
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              {!edit ? (
+                <Button
+                  type="primary"
+                  ghost
+                  icon={<EditOutlined />}
+                  onClick={() => setEdit(!edit)}
+                >
+                  แก้ไขข้อมูล
+                </Button>
+              ) : (
+                <Button
+                  type="primary"
+                  icon={<SaveOutlined />}
+                  onClick={() => setEdit(!edit)}
+                >
+                  บันทึก
+                </Button>
+              )}
             </div>
-          </Card>
-        </div>
-      </Form>
+          </div>
+          <div className="px-10">
+            <Form layout="vertical">
+              <Card
+                style={{
+                  borderColor: "#B2B2B2",
+                  borderRadius: 5,
+                }}
+                bodyStyle={{ padding: 0 }}
+              >
+                <div className="relative overflow-x-auto sm:rounded-lg">
+                  <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                    <tbody>
+                      <tr className="border-b border-gray-200 dark:border-gray-700">
+                        <th
+                          scope="row"
+                          className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
+                        >
+                          ค่าอุปกรณ์
+                        </th>
+                        <td className="px-6 py-4">
+                          <InputNumber
+                            style={{ width: "100%" }}
+                            addonAfter={"บาท"}
+                          />
+                        </td>
+                      </tr>
+                      <tr className="border-b border-gray-200 dark:border-gray-700">
+                        <th
+                          scope="row"
+                          className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
+                        >
+                          ค่าแรงช่าง
+                        </th>
+                        <td className="px-6 py-4">
+                          <InputNumber
+                            style={{ width: "100%" }}
+                            addonAfter={"บาท"}
+                          />
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </Card>
+            </Form>
+          </div>
+        </>
+      )}
     </div>
   );
 }

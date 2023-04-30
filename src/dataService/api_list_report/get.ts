@@ -21,9 +21,12 @@ export type IListReportData = {
   state_name: string;
   image_file: string | null;
   is_allow: boolean;
+  is_new_time: boolean;
   report_dt: string;
   create_dt: string;
   active: number;
+  is_time_not_match: boolean;
+  description_notify: null | string;
 };
 
 export type IQueryListReport = {

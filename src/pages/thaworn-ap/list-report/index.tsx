@@ -35,6 +35,7 @@ import { getTypeBranch } from "src/dataService/api_branch/get";
 import { getTypeStep } from "src/dataService/api_step/get";
 import { useAtom } from "jotai";
 import { authentication } from "src/hook/persistanceData";
+import TYPE_ROLE from "@/components/enums/type_roleid";
 
 type IformInstanceValue = {
   branch: number;
@@ -56,7 +57,7 @@ const listReport: React.FC = () => {
 
   const screen = Grid.useBreakpoint();
 
-  const { data: dataSource, isLoading } = useQuery({
+  const { data: dataSource, isLoading, refetch } = useQuery({
     queryKey: ["report_list", filterListReport],
     queryFn: async () => getListReportData(filterListReport),
   });
@@ -82,6 +83,10 @@ const listReport: React.FC = () => {
 
     setFilterListReport(normalResult);
   };
+  const refetchData = (): void => {
+    refetch();
+  };
+
   const getBranchByLoginId = (): string => {
     switch (auth?.branch_id) {
       case 0:
@@ -272,21 +277,23 @@ const listReport: React.FC = () => {
       },
       key: "report_id",
       render: (item: IListReportData) => {
-        return <Modals item={item} />;
+        return <Modals item={item} refresh={() => refetchData()} />;
       },
     },
   ];
 
   useEffect(() => {
     form.setFieldsValue({
-      branch: auth?.role_id === 3 ? undefined : auth?.branch_id,
+      branch:
+        auth?.role_id === TYPE_ROLE.SUPER_ADMIN ? undefined : auth?.branch_id,
       roomNumber: checkedRoomNumber ? undefined : auth?.room_number,
     });
     setFilterListReport({
       branch_id: auth?.branch_id,
       room_number: auth?.room_number,
     });
-  }, []);
+    console.log("dataSource", dataSource?.result);
+  }, [dataSource]);
 
   return (
     <div>
@@ -306,7 +313,9 @@ const listReport: React.FC = () => {
                   }))}
                   loading={isLoadingBranch}
                   disabled={
-                    isLoadingBranch || auth?.role_id === 3 ? undefined : true
+                    isLoadingBranch || auth?.role_id === TYPE_ROLE.SUPER_ADMIN
+                      ? undefined
+                      : true
                   }
                 />
               </Form.Item>

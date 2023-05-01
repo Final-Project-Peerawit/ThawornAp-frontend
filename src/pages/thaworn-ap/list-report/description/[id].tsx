@@ -33,7 +33,7 @@ export default function component(): React.ReactElement {
   const [auth] = useAtom(authentication);
 
   const {
-    data: listReportDate,
+    data: listReportData,
     isLoading: isLoadingListReportDate,
     refetch,
   } = useQuery({
@@ -53,6 +53,7 @@ export default function component(): React.ReactElement {
         isOpen={isModalOpen}
         onHandleOk={() => console.log()}
         onValueChange={(item) => setIsModalOpen(item)}
+        listReportData={listReportData?.result[0]}
       />
       {isLoadingListReportDate ? (
         <Skeleton active />
@@ -60,7 +61,7 @@ export default function component(): React.ReactElement {
         <div className="pb-10">
           <div className="pb-10 px-10">
             <Steps
-              current={listReportDate?.result[0].state_id - 1}
+              current={listReportData?.result[0].state_id - 1}
               items={[
                 {
                   title: "รอรับเรื่อง",
@@ -87,11 +88,11 @@ export default function component(): React.ReactElement {
           </div>
 
           {auth?.role_id === TYPE_ROLE.USER &&
-          listReportDate?.result[0].is_time_not_match ? (
+          listReportData?.result[0].is_time_not_match ? (
             <div className="px-20 pb-10">
               <Alert
                 message="แจ้งเตือน"
-                description={listReportDate?.result[0].description_notify}
+                description={listReportData?.result[0].description_notify}
                 type="warning"
                 showIcon
                 action={
@@ -109,7 +110,7 @@ export default function component(): React.ReactElement {
 
           {auth?.role_id === TYPE_ROLE.ADMIN ||
           (auth?.role_id === TYPE_ROLE.SUPER_ADMIN &&
-            listReportDate.result[0].is_new_time) ? (
+            listReportData?.result[0].is_new_time) ? (
             <div className="px-20 pb-10">
               <Alert
                 message="แจ้งเตือน"
@@ -143,7 +144,7 @@ export default function component(): React.ReactElement {
                           รหัสการแจ้ง
                         </th>
                         <td className="px-6 py-4">
-                          {listReportDate?.result[0].report_id}
+                          {listReportData?.result[0].report_id}
                         </td>
                       </tr>
                       <tr className="border-b border-gray-200 dark:border-gray-700">
@@ -154,7 +155,7 @@ export default function component(): React.ReactElement {
                           สาขา
                         </th>
                         <td className="px-6 py-4">
-                          {listReportDate?.result[0].branch_name}
+                          {listReportData?.result[0].branch_name}
                         </td>
                       </tr>
                       <tr className="border-b border-gray-200 dark:border-gray-700">
@@ -165,7 +166,7 @@ export default function component(): React.ReactElement {
                           เลขห้อง
                         </th>
                         <td className="px-6 py-4">
-                          {listReportDate?.result[0].room_number}
+                          {listReportData?.result[0].room_number}
                         </td>
                       </tr>
                       <tr className="border-b border-gray-200 dark:border-gray-700">
@@ -178,11 +179,11 @@ export default function component(): React.ReactElement {
                         <td className="px-6 py-4">
                           <div>
                             {new Date(
-                              listReportDate?.result[0].create_dt
+                              listReportData?.result[0].create_dt
                             ).toLocaleDateString("th-TH")}{" "}
                             เวลา{" "}
                             {new Date(
-                              listReportDate?.result[0].create_dt
+                              listReportData?.result[0].create_dt
                             ).toLocaleTimeString("th-TH")}
                           </div>
                         </td>
@@ -195,7 +196,7 @@ export default function component(): React.ReactElement {
                           ประเภทการแจ้ง
                         </th>
                         <td className="px-6 py-4">
-                          {listReportDate?.result[0].type_name}
+                          {listReportData?.result[0].type_name}
                         </td>
                       </tr>
                       <tr className="border-b border-gray-200 dark:border-gray-700">
@@ -206,7 +207,7 @@ export default function component(): React.ReactElement {
                           สถานที่
                         </th>
                         <td className="px-6 py-4">
-                          {listReportDate?.result[0].place_name}
+                          {listReportData?.result[0].place_name}
                         </td>
                       </tr>
                       <tr className="border-b border-gray-200 dark:border-gray-700">
@@ -217,7 +218,7 @@ export default function component(): React.ReactElement {
                           สิ่งที่ต้องการซ่อม
                         </th>
                         <td className="px-6 py-4">
-                          {listReportDate?.result[0].repair_name}
+                          {listReportData?.result[0].repair_name}
                         </td>
                       </tr>
                       <tr className="border-b border-gray-200 dark:border-gray-700">
@@ -228,7 +229,7 @@ export default function component(): React.ReactElement {
                           รายละอียดปัญหา
                         </th>
                         <td className="px-6 py-4">
-                          {listReportDate?.result[0].description}
+                          {listReportData?.result[0].description}
                         </td>
                       </tr>
                       <tr className="border-b border-gray-200 dark:border-gray-700">
@@ -242,7 +243,7 @@ export default function component(): React.ReactElement {
                           <Image
                             preview={false}
                             width={300}
-                            src={listReportDate?.result[0].image_file}
+                            src={listReportData?.result[0].image_file}
                           />
                         </td>
                       </tr>
@@ -254,7 +255,7 @@ export default function component(): React.ReactElement {
                           เบอร์ติดต่อ
                         </th>
                         <td className="px-6 py-4">
-                          {listReportDate?.result[0].phone_number}
+                          {listReportData?.result[0].phone_number}
                         </td>
                       </tr>
                       <tr className="border-b border-gray-200 dark:border-gray-700">
@@ -265,7 +266,7 @@ export default function component(): React.ReactElement {
                           เงื่อนไขการเข้าถึง
                         </th>
                         <td className="px-6 py-4">
-                          {listReportDate?.result[0].is_allow
+                          {listReportData?.result[0].is_allow
                             ? "อนุญาติให้ช่างเข้าซ่อมขณะไม่มีคนอยู่"
                             : "ไม่อนุญาติให้ช่างเข้าซ่อมขณะไม่มีคนอยู่"}
                         </td>
@@ -280,11 +281,11 @@ export default function component(): React.ReactElement {
                         <td className="flex px-6 py-4 items-center space-x-6">
                           <div>
                             {new Date(
-                              listReportDate?.result[0].report_dt
+                              listReportData?.result[0].report_dt
                             ).toLocaleDateString("th-TH")}{" "}
                             เวลา{" "}
                             {new Date(
-                              listReportDate?.result[0].report_dt
+                              listReportData?.result[0].report_dt
                             ).toLocaleTimeString("th-TH")}
                           </div>
                         </td>
@@ -297,7 +298,7 @@ export default function component(): React.ReactElement {
           </div>
 
           <FormManageState
-            listReportDate={listReportDate}
+            listReportDate={listReportData}
             reportId={String(router.query.id)}
             refetch={() => refetch()}
           />

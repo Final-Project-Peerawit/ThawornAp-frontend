@@ -14,6 +14,7 @@ export type IListReportData = {
   type_name: string;
   place_id: number;
   place_name: string;
+  time_id: string;
   repair_id: number;
   repair_name: string;
   state_id: number;

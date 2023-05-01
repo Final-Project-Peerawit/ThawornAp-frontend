@@ -236,15 +236,6 @@ const listReport: React.FC = () => {
           case 5:
             return (
               <Tag
-                icon={<ScheduleOutlined style={{ marginBottom: 5 }} />}
-                color="warning"
-              >
-                ตรวจสอบหลังดำเนินการ
-              </Tag>
-            );
-          case 6:
-            return (
-              <Tag
                 icon={<SmileOutlined style={{ marginBottom: 5 }} />}
                 color="success"
               >

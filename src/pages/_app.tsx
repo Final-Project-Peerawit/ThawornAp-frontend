@@ -99,7 +99,8 @@ export default function MyApp({ Component, pageProps }) {
 
   return (
     <>
-      <head>
+      <Head>
+        <title>Thaworn Ap</title>
         <link
           rel="apple-touch-icon"
           sizes="180x180"
@@ -121,7 +122,7 @@ export default function MyApp({ Component, pageProps }) {
         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
         <meta name="msapplication-TileColor" content="#da532c" />
         <meta name="theme-color" content="#ffffff" />
-      </head>
+      </Head>
 
       {router.pathname === "/thaworn-ap/register" ||
       router.pathname === "/thaworn-ap/login" ? (

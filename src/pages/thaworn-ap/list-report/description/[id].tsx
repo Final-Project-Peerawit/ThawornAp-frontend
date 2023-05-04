@@ -20,7 +20,7 @@ import { useRouter } from "next/router";
 import Router from "next/router";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
-import SelectTime from "../components/select_time";
+import SelectTime, { IformInstanceValue } from "../components/select_time";
 import { getListReportData } from "src/dataService/api_list_report/get";
 import FormManageState from "../components/form_manage_state";
 import { useAtom } from "jotai";
@@ -42,6 +42,8 @@ export default function component(): React.ReactElement {
       getListReportData({ report_id: router.query.id as string }),
   });
 
+  const handleSelectTime = (value: IformInstanceValue): void => {};
+
   return (
     <div className="pt-5">
       <PageHeader
@@ -51,7 +53,7 @@ export default function component(): React.ReactElement {
       />
       <SelectTime
         isOpen={isModalOpen}
-        onHandleOk={() => console.log()}
+        onHandleOk={(value) => console.log()}
         onValueChange={(item) => setIsModalOpen(item)}
         listReportData={listReportData?.result[0]}
       />

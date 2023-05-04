@@ -1,4 +1,16 @@
-import { Button, DatePicker, Form, Modal, Tag, Typography } from "antd";
+import {
+  Button,
+  DatePicker,
+  Form,
+  Modal,
+  Radio,
+  RadioChangeEvent,
+  Space,
+  Switch,
+  Tag,
+  Typography,
+  message,
+} from "antd";
 import { RangePickerProps } from "antd/lib/date-picker";
 import dayjs from "dayjs";
 import React, { useEffect, useMemo, useState } from "react";
@@ -9,8 +21,16 @@ import { IListReportData } from "src/dataService/api_list_report/get";
 type IProp = {
   isOpen: boolean; //input
   onValueChange: (value: boolean) => void; //output
-  onHandleOk: () => void;
+  onHandleOk: (value: IformInstanceValue) => void;
   listReportData: IListReportData | undefined;
+};
+
+export type IformInstanceValue = {
+  timeSlot: {
+    value: string;
+    id: number;
+  };
+  repairsDate: Date | null;
 };
 
 const selectTime = ({
@@ -19,7 +39,7 @@ const selectTime = ({
   onHandleOk,
   listReportData,
 }: IProp): React.ReactElement => {
-  const [timeId, setTimeId] = useState<string>();
+  const [reportId, setReportId] = useState<string>();
 
   const disabledDate: RangePickerProps["disabledDate"] = (current) => {
     // Can not select days before today and today
@@ -27,16 +47,23 @@ const selectTime = ({
   };
 
   const { data: selectTimeSlot, isLoading } = useQuery({
-    queryKey: ["select_time_slot", timeId],
-    queryFn: async () => getITimeSlot({ time_id: timeId }),
+    queryKey: ["select_time_slot", reportId],
+    queryFn: async () => getITimeSlot({ report_id: reportId }),
   });
 
   const selectTimeSlotData = useMemo(() => {
     return selectTimeSlot?.result[0];
   }, [selectTimeSlot]);
 
+  const [form] = Form.useForm<IformInstanceValue>();
+
+  const onFinish = (value: IformInstanceValue): void => {
+    onValueChange(false);
+    onHandleOk(value);
+  };
+
   useEffect(() => {
-    setTimeId(listReportData?.time_id);
+    setReportId(listReportData?.report_id);
   }, [listReportData]);
 
   return (
@@ -47,49 +74,109 @@ const selectTime = ({
       <div className="pl-5 pb-5">
         ท่านสามารถเลือกช่วงเวลาด่านล่างหรือกำหนดขึ้นมาใหม่ได้
       </div>
-      <Tag color="magenta">
-        {new Date(selectTimeSlotData?.time_slot1).toLocaleString("th-TH")}
-      </Tag>
-      <Tag color="red">red</Tag>
-      <Tag color="volcano">volcano</Tag>
-      <Tag color="orange">orange</Tag>
-      <Form layout="vertical">
-        <div className="pt-5">
-          <Form.Item
-            name="repairsDate"
-            label="วันที่-ต้องการให้ช่างเข้ามาซ่อม"
-            rules={[
-              {
-                required: true,
-                message: "กรุณาเลือกวันที่ต้องการให้ช่างเข้ามาซ่อม",
-              },
-            ]}
-          >
-            <DatePicker
-              showTime={{ format: "HH:mm" }}
-              format="YYYY-MM-DD HH:mm"
-              disabledDate={disabledDate}
-              style={{ width: "100%" }}
-              placeholder="เลือกวันที่"
-            />
-          </Form.Item>
+      <Form layout="vertical" form={form} onFinish={onFinish}>
+        <Form.Item
+          name="timeSlot"
+          label="วันที่-ต้องการให้ช่างเข้ามาซ่อม"
+          rules={[
+            {
+              required: true,
+              message: "กรุณาเลือกวันที่-ต้องการให้ช่างเข้ามาซ่อม",
+            },
+          ]}
+        >
+          <Radio.Group>
+            <Space direction="vertical">
+              <Radio
+                value={{
+                  id: 1,
+                  value: new Date(selectTimeSlotData?.time_slot1),
+                }}
+              >
+                {new Date(selectTimeSlotData?.time_slot1).toLocaleString(
+                  "th-TH"
+                )}
+              </Radio>
+              {selectTimeSlotData?.time_slot2 && (
+                <Radio
+                  value={{
+                    id: 2,
+                    value: new Date(selectTimeSlotData?.time_slot2),
+                  }}
+                >
+                  {new Date(selectTimeSlotData?.time_slot2).toLocaleString(
+                    "th-TH"
+                  )}
+                </Radio>
+              )}
+              {selectTimeSlotData?.time_slot3 && (
+                <Radio
+                  value={{
+                    id: 3,
+                    value: new Date(selectTimeSlotData?.time_slot3),
+                  }}
+                >
+                  {new Date(selectTimeSlotData?.time_slot3).toLocaleString(
+                    "th-TH"
+                  )}
+                </Radio>
+              )}
+              {selectTimeSlotData?.time_slot4 && (
+                <Radio
+                  value={{
+                    id: 4,
+                    value: new Date(selectTimeSlotData?.time_slot4),
+                  }}
+                >
+                  {new Date(selectTimeSlotData?.time_slot4).toLocaleString(
+                    "th-TH"
+                  )}
+                </Radio>
+              )}
+              <Radio value={5}>อื่นๆ</Radio>
+            </Space>
+          </Radio.Group>
+        </Form.Item>
+        <Form.Item
+          noStyle
+          shouldUpdate={(prevValues, curValues) =>
+            prevValues.timeSlot !== curValues.timeSlot
+          }
+        >
+          {({ getFieldValue }) => {
+            return (
+              getFieldValue("timeSlot") === 5 && (
+                <Form.Item
+                  name="repairsDate"
+                  label="วันที่-ต้องการให้ช่างเข้ามาซ่อม"
+                  rules={[
+                    {
+                      required: true,
+                      message: "กรุณาเลือกวันที่ต้องการให้ช่างเข้ามาซ่อม",
+                    },
+                  ]}
+                >
+                  <DatePicker
+                    showTime={{ format: "HH:mm" }}
+                    format="YYYY-MM-DD HH:mm"
+                    disabledDate={disabledDate}
+                    style={{ width: "100%" }}
+                    placeholder="เลือกวันที่"
+                  />
+                </Form.Item>
+              )
+            );
+          }}
+        </Form.Item>
+        <div className="pt-5 flex justify-center space-x-4 px-10">
+          <Button danger block onClick={() => onValueChange(false)}>
+            ยกเลิก
+          </Button>
+          <Button type="primary" block htmlType="submit">
+            ยืนยัน
+          </Button>
         </div>
       </Form>
-      <div className="pt-5 flex justify-center space-x-4 px-10">
-        <Button danger block onClick={() => onValueChange(false)}>
-          ยกเลิก
-        </Button>
-        <Button
-          type="primary"
-          block
-          onClick={() => {
-            onValueChange(false);
-            onHandleOk();
-          }}
-        >
-          ยืนยัน
-        </Button>
-      </div>
     </Modal>
   );
 };

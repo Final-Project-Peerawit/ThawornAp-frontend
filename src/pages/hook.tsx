@@ -76,7 +76,6 @@ export default function useMyApp() {
         }
       })
     );
-    console.log(normal);
   }, [data.result]);
 
   return { menu };

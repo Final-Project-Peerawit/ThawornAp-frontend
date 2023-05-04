@@ -10,7 +10,7 @@ export type ITimeSlot = {
 };
 
 export type ITimeSlotBody = {
-  time_id: string;
+  report_id: string;
 };
 
 export type ITimeSlotRespone = {
@@ -24,13 +24,12 @@ export async function getITimeSlot(
     JSON.parse(localStorage.getItem("auth")),
     "token"
   );
-
   const result = await axios.get(`${process.env.REACT_APP_URL}/api/time_slot`, {
     headers: {
       Authorization: `Bearer ${getToken}`,
     },
     params: {
-      time_id: params.time_id,
+      report_id: params.report_id,
     },
   });
   return Promise.resolve({ result: result.data.result });

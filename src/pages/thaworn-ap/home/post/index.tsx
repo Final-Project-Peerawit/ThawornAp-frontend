@@ -48,11 +48,9 @@ export default function postInfo(): React.ReactElement {
       picture: normalUploadFile[0] ? normalUploadFile[0] : null,
     };
 
-    console.log(normal)
     mutate(normal);
   };
 
-    
   const confirm = () => {
     Modal.confirm({
       title: "ยืนยันการสร้างโพส",

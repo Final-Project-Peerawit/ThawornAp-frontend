@@ -151,6 +151,5 @@ export function getTypeFix(placeId: number): Promise<ITypeFixBody> {
     (item) => item.type_place_id === placeId
   );
 
-  console.log(placeId);
   return Promise.resolve({ result: normalResult });
 }

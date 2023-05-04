@@ -3,7 +3,6 @@ import {
   CheckCircleOutlined,
   FileTextOutlined,
   HourglassOutlined,
-  ScheduleOutlined,
   SearchOutlined,
   SmileOutlined,
   SyncOutlined,
@@ -36,6 +35,7 @@ import { getTypeStep } from "src/dataService/api_step/get";
 import { useAtom } from "jotai";
 import { authentication } from "src/hook/persistanceData";
 import TYPE_ROLE from "@/components/enums/type_roleid";
+const { RangePicker } = DatePicker;
 
 type IformInstanceValue = {
   branch: number;
@@ -283,7 +283,6 @@ const listReport: React.FC = () => {
       branch_id: auth?.branch_id,
       room_number: auth?.room_number,
     });
-    console.log("dataSource", dataSource?.result);
   }, [dataSource]);
 
   return (

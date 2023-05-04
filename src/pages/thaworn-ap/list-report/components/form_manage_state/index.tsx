@@ -85,10 +85,10 @@ export default function formManageState({
     mutateCreateTimeSlot({
       params: { report_id: reportId },
       body: {
-        time_slot1: String(new Date(data.timeSlot1).toJSON()),
-        time_slot2: String(new Date(data.timeSlot2).toJSON()),
-        time_slot3: String(new Date(data.timeSlot3).toJSON()),
-        time_slot4: String(new Date(data.timeSlot4).toJSON()),
+        time_slot1: new Date(data.timeSlot1).toJSON(),
+        time_slot2: new Date(data.timeSlot2).toJSON(),
+        time_slot3: new Date(data.timeSlot3).toJSON(),
+        time_slot4: new Date(data.timeSlot4).toJSON(),
       },
     });
   };

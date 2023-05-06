@@ -40,6 +40,10 @@ const selectTime = ({
   listReportData,
 }: IProp): React.ReactElement => {
   const [reportId, setReportId] = useState<string>();
+  const [selectReportTime, setSelectReportTime] = useState<{
+    id: number;
+    value: string;
+  }>();
 
   const disabledDate: RangePickerProps["disabledDate"] = (current) => {
     // Can not select days before today and today
@@ -62,6 +66,39 @@ const selectTime = ({
     onHandleOk(value);
   };
 
+  const handleSelectTime = (changedValues, allValues): void => {
+    switch (allValues.timeSlot) {
+      case 1:
+        return setSelectReportTime({
+          id: 1,
+          value: selectTimeSlotData?.time_slot1,
+        });
+      case 2:
+        return setSelectReportTime({
+          id: 2,
+          value: selectTimeSlotData?.time_slot2,
+        });
+      case 3:
+        return setSelectReportTime({
+          id: 3,
+          value: selectTimeSlotData?.time_slot3,
+        });
+      case 4:
+        return setSelectReportTime({
+          id: 4,
+          value: selectTimeSlotData?.time_slot4,
+        });
+      case 5:
+        return setSelectReportTime({
+          id: 5,
+          value: allValues.repairsDate,
+        });
+
+      default:
+        return null;
+    }
+  };
+
   useEffect(() => {
     setReportId(listReportData?.report_id);
   }, [listReportData]);
@@ -74,7 +111,14 @@ const selectTime = ({
       <div className="pl-5 pb-5">
         ท่านสามารถเลือกช่วงเวลาด่านล่างหรือกำหนดขึ้นมาใหม่ได้
       </div>
-      <Form layout="vertical" form={form} onFinish={onFinish}>
+      <Form
+        layout="vertical"
+        form={form}
+        onFinish={onFinish}
+        onValuesChange={(changedValues, allValues) => {
+          handleSelectTime(changedValues, allValues);
+        }}
+      >
         <Form.Item
           name="timeSlot"
           label="วันที่-ต้องการให้ช่างเข้ามาซ่อม"
@@ -87,47 +131,27 @@ const selectTime = ({
         >
           <Radio.Group>
             <Space direction="vertical">
-              <Radio
-                value={{
-                  id: 1,
-                  value: new Date(selectTimeSlotData?.time_slot1),
-                }}
-              >
+              <Radio value={1}>
                 {new Date(selectTimeSlotData?.time_slot1).toLocaleString(
                   "th-TH"
                 )}
               </Radio>
               {selectTimeSlotData?.time_slot2 && (
-                <Radio
-                  value={{
-                    id: 2,
-                    value: new Date(selectTimeSlotData?.time_slot2),
-                  }}
-                >
+                <Radio value={2}>
                   {new Date(selectTimeSlotData?.time_slot2).toLocaleString(
                     "th-TH"
                   )}
                 </Radio>
               )}
               {selectTimeSlotData?.time_slot3 && (
-                <Radio
-                  value={{
-                    id: 3,
-                    value: new Date(selectTimeSlotData?.time_slot3),
-                  }}
-                >
+                <Radio value={3}>
                   {new Date(selectTimeSlotData?.time_slot3).toLocaleString(
                     "th-TH"
                   )}
                 </Radio>
               )}
               {selectTimeSlotData?.time_slot4 && (
-                <Radio
-                  value={{
-                    id: 4,
-                    value: new Date(selectTimeSlotData?.time_slot4),
-                  }}
-                >
+                <Radio value={4}>
                   {new Date(selectTimeSlotData?.time_slot4).toLocaleString(
                     "th-TH"
                   )}
@@ -168,6 +192,7 @@ const selectTime = ({
             );
           }}
         </Form.Item>
+
         <div className="pt-5 flex justify-center space-x-4 px-10">
           <Button danger block onClick={() => onValueChange(false)}>
             ยกเลิก

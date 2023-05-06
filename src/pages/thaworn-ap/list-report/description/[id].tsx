@@ -15,19 +15,35 @@ import {
   Skeleton,
   Steps,
   Typography,
+  message,
 } from "antd";
 import { useRouter } from "next/router";
 import Router from "next/router";
 import React, { useState } from "react";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import SelectTime, { IformInstanceValue } from "../components/select_time";
 import { getListReportData } from "src/dataService/api_list_report/get";
 import FormManageState from "../components/form_manage_state";
 import { useAtom } from "jotai";
 import { authentication } from "src/hook/persistanceData";
 import TYPE_ROLE from "@/components/enums/type_roleid";
+import {
+  IProp,
+  changeTimeBody,
+  updateChangeTime,
+} from "src/dataService/api_listReport_@reportId_changetime/put";
+import TYPE_STATE from "@/components/enums/type_state";
 
-export default function component(): React.ReactElement {
+type IPropSelectTime = {
+  selectReportTime: {
+    id: number;
+    value: string;
+  };
+};
+
+export default function component({
+  selectReportTime,
+}: IPropSelectTime): React.ReactElement {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [auth] = useAtom(authentication);
@@ -42,7 +58,53 @@ export default function component(): React.ReactElement {
       getListReportData({ report_id: router.query.id as string }),
   });
 
-  const handleSelectTime = (value: IformInstanceValue): void => {};
+  const { mutate } = useMutation({
+    mutationKey: ["updateReporDate"],
+    mutationFn: async (data: IProp) => {
+      return updateChangeTime({
+        body: data.body,
+        params: data.params,
+        query: data.query,
+      });
+    },
+    onSuccess: () => {
+      message.success("อัพเดตสำเร็จ");
+      refetch();
+    },
+    onError: () => {
+      message.error("อัพเดตไม่สำเร็จ");
+    },
+  });
+
+  const handleSelectTime = (value: IPropSelectTime): void => {
+    console.log(value);
+    if (value.selectReportTime.id === 5) {
+      mutate({
+        body: {
+          report_dt: new Date(value.selectReportTime.value).toJSON(),
+          is_new_time: true,
+          is_time_not_match: false,
+        },
+        params: {
+          report_id: router.query.id as string,
+        },
+      });
+    } else {
+      mutate({
+        body: {
+          report_dt: new Date(value.selectReportTime.value).toJSON(),
+          is_new_time: false,
+          is_time_not_match: false,
+        },
+        params: {
+          report_id: router.query.id as string,
+        },
+        query: {
+          state_id: TYPE_STATE.ACCEPT_TIME,
+        },
+      });
+    }
+  };
 
   return (
     <div className="pt-5">
@@ -53,7 +115,8 @@ export default function component(): React.ReactElement {
       />
       <SelectTime
         isOpen={isModalOpen}
-        onHandleOk={(value) => console.log()}
+        // onHandleOk={handleSelectTime}
+        onHandleOk={(value) => console.log(selectReportTime)}
         onValueChange={(item) => setIsModalOpen(item)}
         listReportData={listReportData?.result[0]}
       />

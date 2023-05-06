@@ -116,7 +116,7 @@ export default function component({
       <SelectTime
         isOpen={isModalOpen}
         // onHandleOk={handleSelectTime}
-        onHandleOk={(value) => console.log(selectReportTime)}
+        onHandleOk={(value) => console.log(value)}
         onValueChange={(item) => setIsModalOpen(item)}
         listReportData={listReportData?.result[0]}
       />

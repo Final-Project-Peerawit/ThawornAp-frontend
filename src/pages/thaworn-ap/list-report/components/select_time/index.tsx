@@ -62,8 +62,12 @@ const selectTime = ({
   const [form] = Form.useForm<IformInstanceValue>();
 
   const onFinish = (value: IformInstanceValue): void => {
+    const updatedValue = {
+      ...value,
+      timeSlot: { id: selectReportTime?.id, value: selectReportTime?.value },
+    };
     onValueChange(false);
-    onHandleOk(value);
+    onHandleOk(updatedValue);
   };
 
   const handleSelectTime = (changedValues, allValues): void => {
@@ -91,7 +95,7 @@ const selectTime = ({
       case 5:
         return setSelectReportTime({
           id: 5,
-          value: allValues.repairsDate,
+          value: null,
         });
 
       default:

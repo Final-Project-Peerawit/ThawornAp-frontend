@@ -58,7 +58,7 @@ const listReport: React.FC = () => {
   const screen = Grid.useBreakpoint();
 
   const { data: dataSource, isLoading, refetch } = useQuery({
-    queryKey: ["report_list", filterListReport],
+    queryKey: ["report_list_query", filterListReport],
     queryFn: async () => getListReportData(filterListReport),
   });
 
@@ -283,7 +283,7 @@ const listReport: React.FC = () => {
       branch_id: auth?.branch_id,
       room_number: auth?.room_number,
     });
-  }, [dataSource]);
+  }, []);
 
   return (
     <div>

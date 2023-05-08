@@ -21,7 +21,9 @@ import { useRouter } from "next/router";
 import Router from "next/router";
 import React, { useState } from "react";
 import { useMutation, useQuery } from "react-query";
-import SelectTime, { IformInstanceValue } from "../components/select_time";
+import SelectTime, {
+  IformInstanceValueReport,
+} from "../components/select_time";
 import { getListReportData } from "src/dataService/api_list_report/get";
 import FormManageState from "../components/form_manage_state";
 import { useAtom } from "jotai";
@@ -34,15 +36,16 @@ import {
 } from "src/dataService/api_listReport_@reportId_changetime/put";
 import TYPE_STATE from "@/components/enums/type_state";
 
-type IPropSelectTime = {
-  selectReportTime: {
+export type IPropSelectTime = {
+  timeSlot: {
     id: number;
     value: string;
   };
+  repairsDate: string | null;
 };
 
 export default function component({
-  selectReportTime,
+  timeSlot,
 }: IPropSelectTime): React.ReactElement {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -76,23 +79,25 @@ export default function component({
     },
   });
 
-  const handleSelectTime = (value: IPropSelectTime): void => {
-    console.log(value);
-    if (value.selectReportTime.id === 5) {
+  const handleSelecReportTime = (value: IformInstanceValueReport): void => {
+    if (value.timeSlot.id === 5) {
       mutate({
         body: {
-          report_dt: new Date(value.selectReportTime.value).toJSON(),
+          report_dt: new Date(value.repairsDate).toJSON(),
           is_new_time: true,
           is_time_not_match: false,
         },
         params: {
           report_id: router.query.id as string,
         },
+        query: {
+          state_id: TYPE_STATE.ACCEPT_REPORT,
+        },
       });
     } else {
       mutate({
         body: {
-          report_dt: new Date(value.selectReportTime.value).toJSON(),
+          report_dt: new Date(value.timeSlot.value).toJSON(),
           is_new_time: false,
           is_time_not_match: false,
         },
@@ -106,6 +111,25 @@ export default function component({
     }
   };
 
+  const timeRepairDate = () => {
+    const inputDate = new Date(listReportData?.result[0].create_dt);
+    const inputTimeZone = inputDate.getTimezoneOffset() / 60;
+    const outputTimeZone = 0;
+    const outputDate = new Date(
+      inputDate.getTime() + (outputTimeZone - inputTimeZone) * 60 * 60 * 1000
+    );
+    return outputDate.toLocaleTimeString("th-TH", {
+      timeZone: "Asia/Bangkok",
+    });
+  };
+
+  const inputDate = new Date(listReportData?.result[0].report_dt);
+  const inputTimeZone = inputDate.getTimezoneOffset() / 60;
+  const outputTimeZone = 0;
+  const outputDate = new Date(
+    inputDate.getTime() + (outputTimeZone - inputTimeZone) * 60 * 60 * 1000
+  );
+
   return (
     <div className="pt-5">
       <PageHeader
@@ -115,8 +139,7 @@ export default function component({
       />
       <SelectTime
         isOpen={isModalOpen}
-        // onHandleOk={handleSelectTime}
-        onHandleOk={(value) => console.log(value)}
+        onHandleOk={handleSelecReportTime}
         onValueChange={(item) => setIsModalOpen(item)}
         listReportData={listReportData?.result[0]}
       />
@@ -246,10 +269,7 @@ export default function component({
                             {new Date(
                               listReportData?.result[0].create_dt
                             ).toLocaleDateString("th-TH")}{" "}
-                            เวลา{" "}
-                            {new Date(
-                              listReportData?.result[0].create_dt
-                            ).toLocaleTimeString("th-TH")}
+                            เวลา {timeRepairDate()}
                           </div>
                         </td>
                       </tr>
@@ -349,9 +369,9 @@ export default function component({
                               listReportData?.result[0].report_dt
                             ).toLocaleDateString("th-TH")}{" "}
                             เวลา{" "}
-                            {new Date(
-                              listReportData?.result[0].report_dt
-                            ).toLocaleTimeString("th-TH")}
+                            {outputDate.toLocaleTimeString("th-TH", {
+                              timeZone: "Asia/Bangkok",
+                            })}
                           </div>
                         </td>
                       </tr>

@@ -122,6 +122,13 @@ const listReport: React.FC = () => {
       dataIndex: "create_dt",
       key: "create_dt",
       render: (date: string) => {
+        const inputDate = new Date(date.split(" ")[0]);
+        const inputTimeZone = inputDate.getTimezoneOffset() / 60;
+        const outputTimeZone = 0;
+        const outputDate = new Date(
+          inputDate.getTime() +
+            (outputTimeZone - inputTimeZone) * 60 * 60 * 1000
+        );
         return (
           <>
             {date ? (
@@ -132,7 +139,9 @@ const listReport: React.FC = () => {
 
                 <div>
                   เวลา{" "}
-                  {new Date(date.split(" ")[0]).toLocaleTimeString("th-TH")}
+                  {outputDate.toLocaleTimeString("th-TH", {
+                    timeZone: "Asia/Bangkok",
+                  })}
                 </div>
               </>
             ) : null}

@@ -50,7 +50,7 @@ export async function getListReportData(
     JSON.parse(localStorage.getItem("auth")),
     "token"
   );
-
+  console.log("query", query);
   const result = await axios.get(
     `${process.env.REACT_APP_URL}/api/list-report`,
     {

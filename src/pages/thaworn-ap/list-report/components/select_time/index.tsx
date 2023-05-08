@@ -21,11 +21,11 @@ import { IListReportData } from "src/dataService/api_list_report/get";
 type IProp = {
   isOpen: boolean; //input
   onValueChange: (value: boolean) => void; //output
-  onHandleOk: (value: IformInstanceValue) => void;
+  onHandleOk: (value: IformInstanceValueReport) => void;
   listReportData: IListReportData | undefined;
 };
 
-export type IformInstanceValue = {
+export type IformInstanceValueReport = {
   timeSlot: {
     value: string;
     id: number;
@@ -43,6 +43,7 @@ const selectTime = ({
   const [selectReportTime, setSelectReportTime] = useState<{
     id: number;
     value: string;
+    repairsDate: Date | null;
   }>();
 
   const disabledDate: RangePickerProps["disabledDate"] = (current) => {
@@ -59,9 +60,9 @@ const selectTime = ({
     return selectTimeSlot?.result[0];
   }, [selectTimeSlot]);
 
-  const [form] = Form.useForm<IformInstanceValue>();
+  const [form] = Form.useForm<IformInstanceValueReport>();
 
-  const onFinish = (value: IformInstanceValue): void => {
+  const onFinish = (value: IformInstanceValueReport): void => {
     const updatedValue = {
       ...value,
       timeSlot: { id: selectReportTime?.id, value: selectReportTime?.value },
@@ -76,31 +77,84 @@ const selectTime = ({
         return setSelectReportTime({
           id: 1,
           value: selectTimeSlotData?.time_slot1,
+          repairsDate: null,
         });
       case 2:
         return setSelectReportTime({
           id: 2,
           value: selectTimeSlotData?.time_slot2,
+          repairsDate: null,
         });
       case 3:
         return setSelectReportTime({
           id: 3,
           value: selectTimeSlotData?.time_slot3,
+          repairsDate: null,
         });
       case 4:
         return setSelectReportTime({
           id: 4,
           value: selectTimeSlotData?.time_slot4,
+          repairsDate: null,
         });
       case 5:
         return setSelectReportTime({
           id: 5,
           value: null,
+          repairsDate: allValues,
         });
 
       default:
         return null;
     }
+  };
+
+  const selectTimeSlot1 = () => {
+    const inputDate = new Date(selectTimeSlotData?.time_slot1);
+    const inputTimeZone = inputDate.getTimezoneOffset() / 60;
+    const outputTimeZone = 0;
+    const outputDate = new Date(
+      inputDate.getTime() + (outputTimeZone - inputTimeZone) * 60 * 60 * 1000
+    );
+    return outputDate.toLocaleTimeString("th-TH", {
+      timeZone: "Asia/Bangkok",
+    });
+  };
+
+  const selectTimeSlot2 = () => {
+    const inputDate = new Date(selectTimeSlotData?.time_slot2);
+    const inputTimeZone = inputDate.getTimezoneOffset() / 60;
+    const outputTimeZone = 0;
+    const outputDate = new Date(
+      inputDate.getTime() + (outputTimeZone - inputTimeZone) * 60 * 60 * 1000
+    );
+    return outputDate.toLocaleTimeString("th-TH", {
+      timeZone: "Asia/Bangkok",
+    });
+  };
+
+  const selectTimeSlot3 = () => {
+    const inputDate = new Date(selectTimeSlotData?.time_slot3);
+    const inputTimeZone = inputDate.getTimezoneOffset() / 60;
+    const outputTimeZone = 0;
+    const outputDate = new Date(
+      inputDate.getTime() + (outputTimeZone - inputTimeZone) * 60 * 60 * 1000
+    );
+    return outputDate.toLocaleTimeString("th-TH", {
+      timeZone: "Asia/Bangkok",
+    });
+  };
+
+  const selectTimeSlot4 = () => {
+    const inputDate = new Date(selectTimeSlotData?.time_slot4);
+    const inputTimeZone = inputDate.getTimezoneOffset() / 60;
+    const outputTimeZone = 0;
+    const outputDate = new Date(
+      inputDate.getTime() + (outputTimeZone - inputTimeZone) * 60 * 60 * 1000
+    );
+    return outputDate.toLocaleTimeString("th-TH", {
+      timeZone: "Asia/Bangkok",
+    });
   };
 
   useEffect(() => {
@@ -136,29 +190,33 @@ const selectTime = ({
           <Radio.Group>
             <Space direction="vertical">
               <Radio value={1}>
-                {new Date(selectTimeSlotData?.time_slot1).toLocaleString(
+                {new Date(selectTimeSlotData?.time_slot1).toLocaleDateString(
                   "th-TH"
-                )}
+                )}{" "}
+                {selectTimeSlot1()}
               </Radio>
               {selectTimeSlotData?.time_slot2 && (
                 <Radio value={2}>
-                  {new Date(selectTimeSlotData?.time_slot2).toLocaleString(
+                  {new Date(selectTimeSlotData?.time_slot2).toLocaleDateString(
                     "th-TH"
-                  )}
+                  )}{" "}
+                  {selectTimeSlot2()}
                 </Radio>
               )}
               {selectTimeSlotData?.time_slot3 && (
                 <Radio value={3}>
-                  {new Date(selectTimeSlotData?.time_slot3).toLocaleString(
+                  {new Date(selectTimeSlotData?.time_slot3).toLocaleDateString(
                     "th-TH"
-                  )}
+                  )}{" "}
+                  {selectTimeSlot3()}
                 </Radio>
               )}
               {selectTimeSlotData?.time_slot4 && (
                 <Radio value={4}>
-                  {new Date(selectTimeSlotData?.time_slot4).toLocaleString(
+                  {new Date(selectTimeSlotData?.time_slot4).toLocaleDateString(
                     "th-TH"
-                  )}
+                  )}{" "}
+                  {selectTimeSlot4()}
                 </Radio>
               )}
               <Radio value={5}>อื่นๆ</Radio>

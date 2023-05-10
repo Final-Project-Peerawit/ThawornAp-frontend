@@ -3,7 +3,16 @@ import {
   ExclamationCircleFilled,
   SaveOutlined,
 } from "@ant-design/icons";
-import { Alert, Button, Card, Form, Modal, Typography, message } from "antd";
+import {
+  Alert,
+  Button,
+  Card,
+  Divider,
+  Form,
+  Modal,
+  Typography,
+  message,
+} from "antd";
 import { useAtom } from "jotai";
 import { useMemo, useState } from "react";
 import { authentication } from "src/hook/persistanceData";
@@ -11,7 +20,7 @@ import SelectTimeAdmin, { IformDate } from "../select_time_admin";
 import TYPE_ROLE from "@/components/enums/type_roleid";
 import { InputNumber } from "antd";
 import { IListReportBody } from "src/dataService/api_list_report/get";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import {
   changeStateBody,
   changeStateParams,
@@ -22,6 +31,8 @@ import {
   createTimeSlotBody,
   createTimeSlotParams,
 } from "src/dataService/api_listReport_@reportId_timeSlot/post";
+import { getITimeSlot } from "src/dataService/api_listReport_@timeId_timeSlot/get";
+import ConfigTimeSlot from "../config_time_slot";
 
 interface IProps {
   listReportDate: IListReportBody | undefined;
@@ -36,8 +47,18 @@ export default function formManageState({
 }: IProps): React.ReactElement {
   const [edit, setEdit] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [ModalConfigOpen, setModalConfigOpen] = useState(false);
   const [description, setDescription] = useState<string>();
   const [auth] = useAtom(authentication);
+
+  const {
+    data: selectTimeSlot,
+    isLoading,
+    refetch: refetchTimeSlot,
+  } = useQuery({
+    queryKey: ["config_time_slot", reportId],
+    queryFn: async () => getITimeSlot({ report_id: reportId }),
+  });
 
   const { mutate: mutateUpdateChangeState } = useMutation({
     mutationKey: ["updateChangeState"],
@@ -74,11 +95,16 @@ export default function formManageState({
         },
       });
       refetch();
+      refetchTimeSlot();
     },
     onError: () => {
-      message.error("สร้างม่สำเร็จ");
+      message.error("สร้างไม่สำเร็จ");
     },
   });
+
+  const selectTimeSlotData = useMemo(() => {
+    return selectTimeSlot?.result[0];
+  }, [selectTimeSlot]);
 
   const handleCreateTimeSlot = (data: IformDate): void => {
     setDescription(data.descriptionNotify);
@@ -163,12 +189,38 @@ export default function formManageState({
     return listReportDate.result[0];
   }, [listReportDate]);
 
+  const covertToThaiTimeZone = (value: string): string => {
+    const inputDate = new Date(value);
+    const inputTimeZone = inputDate.getTimezoneOffset() / 60;
+    const outputTimeZone = 0;
+    const outputDate = new Date(
+      inputDate.getTime() + (outputTimeZone - inputTimeZone) * 60 * 60 * 1000
+    );
+    return outputDate.toLocaleTimeString("th-TH", {
+      timeZone: "Asia/Bangkok",
+    });
+  };
+
+  const displayDateFormat = (label: string, value?: string): string | null => {
+    if (!value) return null;
+
+    return `${label}: วันที่ ${new Date(value).toLocaleDateString(
+      "th-TH"
+    )} เวลา ${covertToThaiTimeZone(value)}`;
+  };
+
   return (
     <div>
       <SelectTimeAdmin
         isOpen={isModalOpen}
         onHandleOk={handleCreateTimeSlot}
         onValueChange={(item) => setIsModalOpen(item)}
+      />
+      <ConfigTimeSlot
+        isOpen={ModalConfigOpen}
+        onHandleOk={() => refetchTimeSlot()}
+        onValueChange={(item) => setModalConfigOpen(item)}
+        getTimeSlot={selectTimeSlotData}
       />
       <div className="px-10">
         <Typography.Title level={4}> ข้อมูลการดำเนินการ </Typography.Title>
@@ -232,6 +284,7 @@ export default function formManageState({
                         }
                       />
                       <Alert
+                        className="mb-5"
                         message={`เวลา [${new Date(
                           reportData.report_dt
                         ).toLocaleString(
@@ -253,6 +306,49 @@ export default function formManageState({
                           </Button>
                         }
                       />
+                      {listReportDate.result[0].is_time_not_match ? (
+                        <Alert
+                          message="วัน-เวลาที่แจ้งผู้ใช้"
+                          description={
+                            <div>
+                              <div>
+                                {displayDateFormat(
+                                  "ตัวเลือกที่1",
+                                  selectTimeSlotData?.time_slot1
+                                )}
+                              </div>
+                              <div>
+                                {displayDateFormat(
+                                  "ตัวเลือกที่2",
+                                  selectTimeSlotData?.time_slot2
+                                )}
+                              </div>
+                              <div>
+                                {displayDateFormat(
+                                  "ตัวเลือกที่3",
+                                  selectTimeSlotData?.time_slot3
+                                )}
+                              </div>
+                              <div>
+                                {displayDateFormat(
+                                  "ตัวเลือกที่4",
+                                  selectTimeSlotData?.time_slot4
+                                )}
+                              </div>
+                            </div>
+                          }
+                          type="info"
+                          action={
+                            <Button
+                              type="primary"
+                              className="rounded-md"
+                              onClick={() => setModalConfigOpen(true)}
+                            >
+                              แก้ไขวัน-เวลา
+                            </Button>
+                          }
+                        />
+                      ) : null}
                     </td>
                   </tr>
                 )}

@@ -15,9 +15,13 @@ export type updateTimeSlotParamsTimeSlotResponse = {
   result: boolean;
 };
 
+export type IPropUpdateSelectTimeSlot = {
+  params: updateTimeSlotParams;
+  body: createTimeSlotBody;
+};
+
 export async function updateTimeSlot(
-  params: updateTimeSlotParams,
-  body: createTimeSlotBody
+  data: IPropUpdateSelectTimeSlot
 ): Promise<updateTimeSlotParamsTimeSlotResponse> {
   const getToken = Reflect.get(
     JSON.parse(localStorage.getItem("auth")),
@@ -25,12 +29,12 @@ export async function updateTimeSlot(
   );
 
   const result = await axios.put(
-    `${process.env.REACT_APP_URL}/api/list-report/${params.time_id}/time-slot`,
+    `${process.env.REACT_APP_URL}/api/list-report/${data.params.time_id}/update`,
     {
-      time_slot1: body.time_slot1,
-      time_slot2: body.time_slot2,
-      time_slot3: body.time_slot3,
-      time_slot4: body.time_slot4,
+      time_slot1: data.body.time_slot1,
+      time_slot2: data.body.time_slot2,
+      time_slot3: data.body.time_slot3,
+      time_slot4: data.body.time_slot4,
     },
     {
       headers: {

@@ -1,6 +1,7 @@
 import {
   EditOutlined,
   ExclamationCircleFilled,
+  ExclamationCircleOutlined,
   SaveOutlined,
 } from "@ant-design/icons";
 import {
@@ -33,6 +34,8 @@ import {
 } from "src/dataService/api_listReport_@reportId_timeSlot/post";
 import { getITimeSlot } from "src/dataService/api_listReport_@timeId_timeSlot/get";
 import ConfigTimeSlot from "../config_time_slot";
+import { deleteTimeSlot } from "src/dataService/api_listReport_@reportId_timeSlot/delete";
+import moment from "moment";
 
 interface IProps {
   listReportDate: IListReportBody | undefined;
@@ -48,6 +51,7 @@ export default function formManageState({
   const [edit, setEdit] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [ModalConfigOpen, setModalConfigOpen] = useState(false);
+  const [ModalDeleteOpen, setModalDeleteOpen] = useState(false);
   const [description, setDescription] = useState<string>();
   const [auth] = useAtom(authentication);
 
@@ -102,6 +106,20 @@ export default function formManageState({
     },
   });
 
+  const { mutate: mutateDeletTimeSlot } = useMutation({
+    mutationKey: ["deleteTimeSlot"],
+    mutationFn: async () => {
+      return deleteTimeSlot({ report_id: listReportDate?.result[0].report_id });
+    },
+    onSuccess: () => {
+      message.success("ลบสำเร็จ");
+      refetch();
+    },
+    onError: () => {
+      message.error("ลบไม่สำเร็จ");
+    },
+  });
+
   const selectTimeSlotData = useMemo(() => {
     return selectTimeSlot?.result[0];
   }, [selectTimeSlot]);
@@ -131,6 +149,16 @@ export default function formManageState({
           body: { state_id: 2 },
         });
       },
+    });
+  };
+
+  const modalDeleteTimeSlot = () => {
+    Modal.confirm({
+      title: "ยืนยันการลบโพส",
+      icon: <ExclamationCircleOutlined />,
+      okText: "ยืนยัน",
+      cancelText: "ยกเลิก",
+      onOk: () => mutateDeletTimeSlot(),
     });
   };
 
@@ -186,7 +214,7 @@ export default function formManageState({
   }
 
   const reportData = useMemo(() => {
-    return listReportDate.result[0];
+    return listReportDate?.result[0];
   }, [listReportDate]);
 
   const covertToThaiTimeZone = (value: string): string => {
@@ -207,6 +235,18 @@ export default function formManageState({
     return `${label}: วันที่ ${new Date(value).toLocaleDateString(
       "th-TH"
     )} เวลา ${covertToThaiTimeZone(value)}`;
+  };
+
+  const confirmIimeRepairDate = () => {
+    const inputDate = new Date(reportData.report_dt);
+    const inputTimeZone = inputDate.getTimezoneOffset() / 60;
+    const outputTimeZone = 0;
+    const outputDate = new Date(
+      inputDate.getTime() + (outputTimeZone - inputTimeZone) * 60 * 60 * 1000
+    );
+    return outputDate.toLocaleTimeString("th-TH", {
+      timeZone: "Asia/Bangkok",
+    });
   };
 
   return (
@@ -266,7 +306,9 @@ export default function formManageState({
                         className="mb-5"
                         message={`ยันยันเวลา ${new Date(
                           reportData.report_dt
-                        ).toLocaleString("th-TH")}`}
+                        ).toLocaleDateString(
+                          "th-TH"
+                        )} ${confirmIimeRepairDate()}`}
                         banner
                         type="success"
                         action={
@@ -287,9 +329,9 @@ export default function formManageState({
                         className="mb-5"
                         message={`เวลา [${new Date(
                           reportData.report_dt
-                        ).toLocaleString(
+                        ).toLocaleDateString(
                           "th-TH"
-                        )}] ที่ผู้ใช้เลือก ไม่สามารถนัดช่วงได้ เพื่มวัน-เวลา ให้ผู้ใช้เลือก`}
+                        )} ${confirmIimeRepairDate()}] ที่ผู้ใช้เลือก ไม่สามารถนัดช่วงได้ เพื่มวัน-เวลา ให้ผู้ใช้เลือก`}
                         banner
                         type="warning"
                         action={
@@ -339,13 +381,22 @@ export default function formManageState({
                           }
                           type="info"
                           action={
-                            <Button
-                              type="primary"
-                              className="rounded-md"
-                              onClick={() => setModalConfigOpen(true)}
-                            >
-                              แก้ไขวัน-เวลา
-                            </Button>
+                            <div className="flex space-x-3">
+                              <Button
+                                type="primary"
+                                className="rounded-md"
+                                onClick={() => setModalConfigOpen(true)}
+                              >
+                                แก้ไข
+                              </Button>
+                              <Button
+                                danger
+                                className="rounded-md"
+                                onClick={modalDeleteTimeSlot}
+                              >
+                                ลบ
+                              </Button>
+                            </div>
                           }
                         />
                       ) : null}

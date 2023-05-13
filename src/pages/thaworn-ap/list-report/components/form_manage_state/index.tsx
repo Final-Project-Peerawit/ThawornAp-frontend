@@ -4,16 +4,7 @@ import {
   ExclamationCircleOutlined,
   SaveOutlined,
 } from "@ant-design/icons";
-import {
-  Alert,
-  Button,
-  Card,
-  Divider,
-  Form,
-  Modal,
-  Typography,
-  message,
-} from "antd";
+import { Alert, Button, Card, Form, Modal, Typography, message } from "antd";
 import { useAtom } from "jotai";
 import { useMemo, useState } from "react";
 import { authentication } from "src/hook/persistanceData";
@@ -35,7 +26,6 @@ import {
 import { getITimeSlot } from "src/dataService/api_listReport_@timeId_timeSlot/get";
 import ConfigTimeSlot from "../config_time_slot";
 import { deleteTimeSlot } from "src/dataService/api_listReport_@reportId_timeSlot/delete";
-import moment from "moment";
 
 interface IProps {
   listReportDate: IListReportBody | undefined;

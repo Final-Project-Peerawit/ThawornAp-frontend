@@ -85,6 +85,16 @@ export default function MyApp({ Component, pageProps }) {
     router.push(`/thaworn-ap/profile/${auth.login_id}`);
   };
 
+  const menuRole = menu.filter((item) => {
+    if (auth?.role_id === 1) {
+      return [1, 2, 3, 6].includes(item.key);
+    } else if (auth?.role_id === 2) {
+      return [1, 2, 3, 4, 6].includes(item.key);
+    } else if (auth?.role_id === 3) {
+      return [1, 2, 3, 4, 5, 6].includes(item.key);
+    }
+  });
+
   useEffect(() => {
     if (checkAuth) {
       router.push("/thaworn-ap/login");
@@ -127,7 +137,7 @@ export default function MyApp({ Component, pageProps }) {
               mode="inline"
               defaultSelectedKeys={["1"]}
               onClick={(value) => routerPage(Number(value.key))}
-              items={menu.map((item) => ({
+              items={menuRole.map((item) => ({
                 key: item.key,
                 icon: item.icon,
                 label: item.label,

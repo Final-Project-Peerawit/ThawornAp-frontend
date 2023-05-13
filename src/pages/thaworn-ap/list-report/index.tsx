@@ -1,6 +1,7 @@
 import DatePicker from "@/components/date_picker";
 import {
   CheckCircleOutlined,
+  EditOutlined,
   FileTextOutlined,
   HourglassOutlined,
   SearchOutlined,
@@ -35,7 +36,6 @@ import { getTypeStep } from "src/dataService/api_step/get";
 import { useAtom } from "jotai";
 import { authentication } from "src/hook/persistanceData";
 import TYPE_ROLE from "@/components/enums/type_roleid";
-const { RangePicker } = DatePicker;
 
 type IformInstanceValue = {
   branch: number;
@@ -267,6 +267,20 @@ const listReport: React.FC = () => {
       render: (id: number) => (
         <a onClick={() => history.push(`list-report/description/${id}`)}>
           <FileTextOutlined style={{ color: "#3398E8" }} />
+        </a>
+      ),
+    },
+    {
+      width: "8%",
+      align: "center" as const,
+      title: () => {
+        return <Typography.Text strong> แก้ไข </Typography.Text>;
+      },
+      dataIndex: "report_id",
+      key: "report_id",
+      render: (id: number) => (
+        <a onClick={() => history.push(`list-report/edit-report/${id}`)}>
+          <EditOutlined style={{ color: "#3398E8" }} />
         </a>
       ),
     },

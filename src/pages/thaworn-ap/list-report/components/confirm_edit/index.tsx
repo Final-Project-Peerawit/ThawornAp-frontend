@@ -2,33 +2,42 @@ import { Button, message, Modal, Typography, UploadFile } from "antd";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useMutation } from "react-query";
+import { IcreateReportData } from "src/dataService/api_@customerId_report/post";
+import { IformInstanceValue } from "../../../report";
 import {
-  createReport,
-  IcreateReportData,
-} from "src/dataService/api_@customerId_report/post";
-import { IformInstanceValue } from "../..";
+  IPropUpdateEditReport,
+  updateEditReport,
+  updateEditReportBody,
+  updateEditReportParams,
+} from "src/dataService/api_@customerId_report/put";
 
 type IProp = {
   isOpen: boolean; //input
   onValueChange: (value: boolean) => void; //output
+  reportId: string;
   form: IformInstanceValue;
 };
 
-function modals({ isOpen, onValueChange, form }: IProp): React.ReactElement {
+function confirmEdit({
+  isOpen,
+  onValueChange,
+  reportId,
+  form,
+}: IProp): React.ReactElement {
   const [isModalOpen, setIsModalOpen] = useState(isOpen);
   const router = useRouter();
 
-  const { mutate } = useMutation({
-    mutationKey: ["createReport"],
-    mutationFn: async (data: IcreateReportData) => {
-      return createReport({ data: data });
+  const { mutate: MutateUpdateEditReport } = useMutation({
+    mutationKey: ["updateEditReport"],
+    mutationFn: async (data: IPropUpdateEditReport) => {
+      return updateEditReport(data);
     },
     onSuccess: () => {
-      message.success("Create Success");
+      message.success("แก้ไขสำเร็จ");
       router.push("/thaworn-ap/list-report");
     },
     onError: () => {
-      message.error("Create Error");
+      message.error("แก้ไขไม่สำเร็จ");
     },
   });
 
@@ -42,16 +51,20 @@ function modals({ isOpen, onValueChange, form }: IProp): React.ReactElement {
       form.fixId = 0;
     }
 
-    const normal: IcreateReportData = {
-      typeReportId: form.typeReportId,
-      placeId: form.placeId,
-      fixId: form.fixId,
-      uploadFile: normalUploadFile[0] ? normalUploadFile : null,
-      description: form.description ? form.description : null,
-      repairsDate: new Date(String(form.repairsDate)).toJSON(),
-      allow: form.allow ? true : false,
+    const normal: IPropUpdateEditReport = {
+      params: { report_id: reportId },
+      body: {
+        typeReportId: form.typeReportId,
+        placeId: form.placeId,
+        fixId: form.fixId,
+        uploadFile: normalUploadFile[0] ? normalUploadFile : null,
+        description: form.description ? form.description : null,
+        repairsDate: new Date(String(form.repairsDate)).toJSON(),
+        allow: form.allow ? true : false,
+      },
     };
-    mutate(normal);
+
+    MutateUpdateEditReport(normal);
   };
 
   const handleCancel = (): void => {
@@ -86,4 +99,4 @@ function modals({ isOpen, onValueChange, form }: IProp): React.ReactElement {
   );
 }
 
-export default modals;
+export default confirmEdit;

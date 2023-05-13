@@ -1,5 +1,8 @@
+import TYPE_ROLE from "@/components/enums/type_roleid";
+import TYPE_STATE from "@/components/enums/type_state";
 import { DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { Button, message, Modal, Typography } from "antd";
+import { useAtom } from "jotai";
 import React, { useState } from "react";
 import { useMutation } from "react-query";
 import { IListReportData } from "src/dataService/api_list_report/get";
@@ -7,6 +10,7 @@ import {
   IDeleteListReport,
   deleteListReport,
 } from "src/dataService/api_list_report/put";
+import { authentication } from "src/hook/persistanceData";
 
 interface IProp {
   item: IListReportData;
@@ -15,9 +19,17 @@ interface IProp {
 
 function modals({ item, refresh }: IProp): React.ReactElement {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [auth] = useAtom(authentication);
 
   const showModal = (): void => {
     setIsModalOpen(true);
+  };
+
+  const handleDeleteReport = (): boolean => {
+    return (
+      auth?.role_id === TYPE_ROLE.USER &&
+      item.state_id > TYPE_STATE.ACCEPT_REPORT
+    );
   };
 
   const { mutate } = useMutation({
@@ -44,7 +56,17 @@ function modals({ item, refresh }: IProp): React.ReactElement {
   };
   return (
     <>
-      <DeleteOutlined onClick={showModal} style={{ color: "#FA6262" }} />
+      <DeleteOutlined
+        onClick={() => {
+          if (!handleDeleteReport()) {
+            showModal();
+          }
+        }}
+        style={{
+          color: handleDeleteReport() ? "#525252" : "#FA6262",
+          cursor: handleDeleteReport() ? "not-allowed" : "pointer",
+        }}
+      />
       <Modal
         title={false}
         open={isModalOpen}

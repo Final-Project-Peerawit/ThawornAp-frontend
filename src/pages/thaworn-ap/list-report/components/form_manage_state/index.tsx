@@ -251,6 +251,7 @@ export default function formManageState({
         onHandleOk={() => refetchTimeSlot()}
         onValueChange={(item) => setModalConfigOpen(item)}
         getTimeSlot={selectTimeSlotData}
+        listReportDate={listReportDate}
       />
       <div className="px-10">
         <Typography.Title level={4}> ข้อมูลการดำเนินการ </Typography.Title>

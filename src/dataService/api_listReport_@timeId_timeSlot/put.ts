@@ -9,6 +9,7 @@ export type createTimeSlotBody = {
   time_slot2?: string | null;
   time_slot3?: string | null;
   time_slot4?: string | null;
+  report_id: string;
 };
 
 export type updateTimeSlotParamsTimeSlotResponse = {
@@ -35,6 +36,7 @@ export async function updateTimeSlot(
       time_slot2: data.body.time_slot2,
       time_slot3: data.body.time_slot3,
       time_slot4: data.body.time_slot4,
+      report_id: data.body.report_id,
     },
     {
       headers: {

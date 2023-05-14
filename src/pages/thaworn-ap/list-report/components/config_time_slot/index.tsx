@@ -9,6 +9,7 @@ import {
   IPropUpdateSelectTimeSlot,
   updateTimeSlot,
 } from "src/dataService/api_listReport_@timeId_timeSlot/put";
+import { IListReportBody } from "src/dataService/api_list_report/get";
 
 export type IformConfigDate = {
   timeSlot1: Date | null;
@@ -22,6 +23,7 @@ type IProp = {
   onValueChange: (value: boolean) => void; //output
   onHandleOk: () => void;
   getTimeSlot: ITimeSlot | undefined;
+  listReportDate: IListReportBody;
 };
 
 const configTimeSlot = ({
@@ -29,6 +31,7 @@ const configTimeSlot = ({
   onValueChange,
   onHandleOk,
   getTimeSlot,
+  listReportDate,
 }: IProp): React.ReactElement => {
   const [form] = Form.useForm<IformConfigDate>();
   const disabledDate: RangePickerProps["disabledDate"] = (current) => {
@@ -66,6 +69,7 @@ const configTimeSlot = ({
         time_slot4: values.timeSlot4
           ? new Date(values.timeSlot4).toJSON()
           : null,
+        report_id: listReportDate?.result[0].report_id,
       },
       params: {
         time_id: getTimeSlot.time_id,
